@@ -3,7 +3,8 @@
 """
 Created on Thu Sep 30 14:52:37 2021
 
-@author: daniele
+@author: Daniele Zannoni
+Some modification of stringdoc
 """
 #%% Import section
 import pandas as pd
