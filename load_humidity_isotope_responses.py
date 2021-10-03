@@ -92,10 +92,8 @@ for level in levels[1:]:
     dD_stds[idx]   = Picarro_data_subset.dD[good_indexes].std()
     # ---
     idx+=1
-# Save as DataFrame
-d = {'H2O':         H2O_level,
-     'd18O':        d18O_means,
-     'd18O_err':    d18O_stds,
-     'dD':          dD_means,
-     'dD_err':      dD_stds}
-BER20210919 = pd.DataFrame(data = d)
+# Prepare numpy array
+d = np.concatenate((H2O_level, d18O_means, d18O_stds, dD_means, dD_stds), axis = 1)
+
+BER20210919 = pd.DataFrame(d, columns=
+                           ['H2O', 'd18O_mean', 'd18O_err', 'dD_mean', 'dD_err'])
