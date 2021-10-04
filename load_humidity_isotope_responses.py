@@ -14,8 +14,30 @@ import datetime
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
+from FARLAB_standards import standard
+
+#%% Configuration
+d18O_standard   = standard('FINSE', 'd18O')
+dD_standard     = standard('FINSE', 'dD')
+
+filename_to_save = "FINSE_20210921.pkl"
+
+# --------------- BERMUDA 19 Sept
+#date_start      = datetime.datetime(year=2021,month=9,day=19,hour=10,minute=20)
+#date_stop       = datetime.datetime(year=2021,month=9,day=19,hour=13,minute=37)
+# --------------- GLW 19 Sept
+#date_start      = datetime.datetime(year=2021,month=9,day=19,hour=14,minute=10)
+#date_stop       = datetime.datetime(year=2021,month=9,day=19,hour=16,minute=0)
+# --------------- GLW 20 Sept
+#date_start      = datetime.datetime(year=2021,month=9,day=20,hour=12,minute=16)
+#date_stop       = datetime.datetime(year=2021,month=9,day=20,hour=14,minute=45)
+# --------------- FINSE 21 Sept
+date_start      = datetime.datetime(year=2021,month=9,day=21,hour=9,minute=17)
+date_stop       = datetime.datetime(year=2021,month=9,day=21,hour=13,minute=30)
 #%% Import NetCDF data
-file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210919-DataLog_User.nc')
+# file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210919-DataLog_User.nc')
+# file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210920-DataLog_User (1).nc')
+file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210921-DataLog_User.nc')
 #print(file2read)
 for dim in file2read.dimensions.values():
     print(dim)
@@ -41,8 +63,6 @@ Picarro_data.index = Picarro_data['Time']
 Picarro_data = Picarro_data.drop(columns = 'Time')
 
 #%% Subset data by dates BERMUDA
-date_start      = datetime.datetime(year=2021,month=9,day=19,hour=10,minute=20)
-date_stop       = datetime.datetime(year=2021,month=9,day=19,hour=13,minute=37)
 good_indexes    = [Picarro_data.index > date_start, Picarro_data.index < date_stop] # Select by dates
 good_indexes    = good_indexes[0] & good_indexes[1]                                 # Make an array of logicals
 
@@ -69,7 +89,8 @@ ax[2].grid()
 
 
 #%% Bin data based on H2O levels
-levels          = np.histogram_bin_edges(Picarro_data_subset['H2O'], bins = 20)
+#levels          = np.histogram_bin_edges(Picarro_data_subset['H2O'], bins = 20)
+levels          = np.histogram_bin_edges(Picarro_data_subset['H2O'])
 level_window    = 300
 
 # Preallocate memory for level values
@@ -95,5 +116,17 @@ for level in levels[1:]:
 # Prepare numpy array
 d = np.concatenate((H2O_level, d18O_means, d18O_stds, dD_means, dD_stds), axis = 1)
 
-BER20210919 = pd.DataFrame(d, columns=
-                           ['H2O', 'd18O_mean', 'd18O_err', 'dD_mean', 'dD_err'])
+#%% Save DataFrame
+my_data_frame = pd.DataFrame(d, columns = ['H2O', 'd18O_mean', 'd18O_err', 'dD_mean', 'dD_err'])
+my_data_frame.to_pickle(filename_to_save)
+#%% Plot curves
+fig, ax = plt.subplots(nrows = 2, figsize = [15,10])
+ax[0].scatter(my_data_frame['H2O'], my_data_frame['d18O_mean'] - d18O_standard,
+              s = 64, marker = 'o')
+ax[0].set(ylabel = '$\delta^{18}$O meas-std [‰]')
+ax[0].grid()
+
+ax[1].scatter(my_data_frame['H2O'], my_data_frame['dD_mean'] - dD_standard,
+              s = 64, marker = 'o')
+ax[1].set(ylabel = '$\delta$D meas-std [‰]')
+ax[1].grid()
