@@ -29,8 +29,14 @@ XVar = temp_df['H2O'].to_numpy()
 
 YVar = temp_df['d18O_mean'].to_numpy() - standard('GLW', 'd18O')
 
+
 mod = ExpressionModel('offset + amplitude * x**exponent')
 result_GLW = mod.fit(YVar, x=XVar, offset = 4, amplitude = 1, exponent = 1)
+
+# Yongbiao Model --------------------------------------
+mod = ExpressionModel('a/x + b*x + c')
+result_GLW = mod.fit(YVar, x=XVar, a = 0, b = 1, c = 1)
+# -----------------------------------------------------
 r_squared = 1 - result_GLW.residual.var() / np.var(YVar)
 x_pred = np.linspace(1000, 20000)
 y_pred = result_GLW.eval(x = x_pred)
@@ -61,6 +67,12 @@ YVar = temp_df['d18O_mean'].to_numpy() - standard('FINSE', 'd18O')
 
 mod = ExpressionModel('offset + amplitude * x**exponent')
 result_FIN = mod.fit(YVar, x=XVar, offset = 4, amplitude = 1, exponent = 1)
+
+# Yongbiao Model --------------------------------------
+mod = ExpressionModel('a/x + b*x + c')
+result_FIN = mod.fit(YVar, x=XVar, a = 0, b = 1, c = 1)
+# -----------------------------------------------------
+
 r_squared = 1 - result_FIN.residual.var() / np.var(YVar)
 x_pred = np.linspace(1000, 20000)
 y_pred = result_FIN.eval(x = x_pred)
@@ -92,6 +104,10 @@ YVar = temp_df['d18O_mean'].to_numpy() - standard('BER', 'd18O')
 
 mod = ExpressionModel('offset + amplitude * x**exponent')
 result_BER = mod.fit(YVar, x=XVar, offset = 4, amplitude = 1, exponent = 1)
+# Yongbiao Model --------------------------------------
+mod = ExpressionModel('a/x + b*x + c')
+result_BER = mod.fit(YVar, x=XVar, a = 0, b = 1, c = 1)
+# -----------------------------------------------------
 r_squared = 1 - result_BER.residual.var() / np.var(YVar)
 x_pred = np.linspace(1000, 20000)
 y_pred = result_BER.eval(x = x_pred)

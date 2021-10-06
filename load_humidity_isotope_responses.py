@@ -17,28 +17,28 @@ import matplotlib.dates as mdates
 from FARLAB_standards import standard
 
 #%% Configuration
-d18O_standard   = standard('FINSE', 'd18O')
-dD_standard     = standard('FINSE', 'dD')
+d18O_standard   = standard('GLW', 'd18O')
+dD_standard     = standard('GLW', 'dD')
 
-filename_to_save = "BER_20210921_extended_2.pkl"
+filename_to_save = "GLW_20210920_extended_2.pkl"
 
 # --------------- BERMUDA 19 Sept
-date_start      = datetime.datetime(year=2021,month=9,day=19,hour=10,minute=20)
-date_stop       = datetime.datetime(year=2021,month=9,day=19,hour=13,minute=37)
+#date_start      = datetime.datetime(year=2021,month=9,day=19,hour=10,minute=20)
+#date_stop       = datetime.datetime(year=2021,month=9,day=19,hour=13,minute=37)
 # --------------- GLW 19 Sept
 #date_start      = datetime.datetime(year=2021,month=9,day=19,hour=14,minute=10)
 #date_stop       = datetime.datetime(year=2021,month=9,day=19,hour=16,minute=5)
 # --------------- GLW 20 Sept
-#date_start      = datetime.datetime(year=2021,month=9,day=20,hour=12,minute=16)
-#date_stop       = datetime.datetime(year=2021,month=9,day=20,hour=14,minute=45)
+date_start      = datetime.datetime(year=2021,month=9,day=20,hour=12,minute=16)
+date_stop       = datetime.datetime(year=2021,month=9,day=20,hour=14,minute=45)
 # --------------- FINSE 21 Sept
 #date_start      = datetime.datetime(year=2021,month=9,day=21,hour=9,minute=17)
 #date_stop       = datetime.datetime(year=2021,month=9,day=21,hour=13,minute=31)
 #%% Import NetCDF data
 # Ok for BERMUDA and GLW 19.09.2021
-file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210919-DataLog_User.nc')
+#file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210919-DataLog_User.nc')
 # Ok for GLW 20.09.2021
-#file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210920-DataLog_User (1).nc')
+file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210920-DataLog_User (1).nc')
 # Ok for FINSE
 #file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210921-DataLog_User.nc')
 #print(file2read)
