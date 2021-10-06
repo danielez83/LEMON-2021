@@ -1,0 +1,11 @@
+# Custom MAC folders
+.DS_Store
+Icon\r
+__pycache__/
+
+#Datafile
+*.pkl
+
+# Top secret routines and functions
+FARLAB_standards.py
+
