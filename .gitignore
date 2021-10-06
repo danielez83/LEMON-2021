@@ -6,6 +6,6 @@ __pycache__/
 #Datafile
 *.pkl
 
-# Top secret routines and functions
+# Personal routines and functions
 FARLAB_standards.py
 
