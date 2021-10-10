@@ -20,25 +20,25 @@ from FARLAB_standards import standard
 d18O_standard   = standard('GLW', 'd18O')
 dD_standard     = standard('GLW', 'dD')
 
-filename_to_save = "GLW_20210920_extended_2.pkl"
+filename_to_save = "GLW_20210919_extended_2.pkl"
 
 # --------------- BERMUDA 19 Sept
-#date_start      = datetime.datetime(year=2021,month=9,day=19,hour=10,minute=20)
-#date_stop       = datetime.datetime(year=2021,month=9,day=19,hour=13,minute=37)
+date_start      = datetime.datetime(year=2021,month=9,day=19,hour=10,minute=20)
+date_stop       = datetime.datetime(year=2021,month=9,day=19,hour=13,minute=37)
 # --------------- GLW 19 Sept
 #date_start      = datetime.datetime(year=2021,month=9,day=19,hour=14,minute=10)
 #date_stop       = datetime.datetime(year=2021,month=9,day=19,hour=16,minute=5)
 # --------------- GLW 20 Sept
-date_start      = datetime.datetime(year=2021,month=9,day=20,hour=12,minute=16)
-date_stop       = datetime.datetime(year=2021,month=9,day=20,hour=14,minute=45)
+#date_start      = datetime.datetime(year=2021,month=9,day=20,hour=12,minute=16)
+#date_stop       = datetime.datetime(year=2021,month=9,day=20,hour=14,minute=45)
 # --------------- FINSE 21 Sept
 #date_start      = datetime.datetime(year=2021,month=9,day=21,hour=9,minute=17)
 #date_stop       = datetime.datetime(year=2021,month=9,day=21,hour=13,minute=31)
 #%% Import NetCDF data
 # Ok for BERMUDA and GLW 19.09.2021
-#file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210919-DataLog_User.nc')
+file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210919-DataLog_User.nc')
 # Ok for GLW 20.09.2021
-file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210920-DataLog_User (1).nc')
+#file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210920-DataLog_User (1).nc')
 # Ok for FINSE
 #file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210921-DataLog_User.nc')
 #print(file2read)
@@ -60,7 +60,10 @@ ncdate = nc.num2date(time, 'days since 1970-01-01 00:00:00.0',
 d = {'Time': ncdate,
      'H2O': H2O,
      'd18O': Delta_18_16,
-     'dD': Delta_D_H}
+     'dD': Delta_D_H,
+     'baseline_shift': baseline_shift,
+     'residuals': residuals,
+     'slope_shift': slope_shift}
 Picarro_data = pd.DataFrame(data = d)
 Picarro_data.index = Picarro_data['Time']
 Picarro_data = Picarro_data.drop(columns = 'Time')
@@ -157,6 +160,10 @@ d18O_means  = np.zeros((len(levels), 1))
 d18O_stds   = np.zeros((len(levels), 1))
 dD_means    = np.zeros((len(levels), 1))
 dD_stds     = np.zeros((len(levels), 1))
+# Extra
+residuals_means         = np.zeros((len(levels), 1)) 
+slope_shift_means       = np.zeros((len(levels), 1))
+baseline_shift_means    = np.zeros((len(levels), 1))
 idx = 0
 
 for level in levels[:]:
@@ -170,12 +177,18 @@ for level in levels[:]:
     d18O_stds[idx] = Picarro_data_subset.d18O[good_indexes].std(skipna=True)
     dD_stds[idx]   = Picarro_data_subset.dD[good_indexes].std(skipna=True)
     # ---
+    residuals_means[idx]         = Picarro_data_subset.residuals[good_indexes].std(skipna=True)
+    slope_shift_means[idx]       = Picarro_data_subset.slope_shift[good_indexes].std(skipna=True)
+    baseline_shift_means[idx]    = Picarro_data_subset.baseline_shift[good_indexes].std(skipna=True)
+    
     idx+=1
 # Prepare numpy array
-d = np.concatenate((H2O_level, d18O_means, d18O_stds, dD_means, dD_stds), axis = 1)
+d = np.concatenate((H2O_level, d18O_means, d18O_stds, dD_means, dD_stds, 
+                    residuals_means, slope_shift_means, baseline_shift_means), axis = 1)
 
 #%% Save DataFrame
-my_data_frame = pd.DataFrame(d, columns = ['H2O', 'd18O_mean', 'd18O_err', 'dD_mean', 'dD_err'])
+my_data_frame = pd.DataFrame(d, columns = ['H2O', 'd18O_mean', 'd18O_err', 'dD_mean', 'dD_err', 
+                                           'residuals', 'slope_shift', 'baseline_shift'])
 my_data_frame.dropna(inplace = True)
 my_data_frame.to_pickle(filename_to_save)
 #%% Plot curves

@@ -27,15 +27,18 @@ temp_df = temp_df.sort_values(by = ['H2O'])
 
 XVar = temp_df['H2O'].to_numpy()
 
+# YVar = temp_df['d18O_mean'].to_numpy() - standard('GLW', 'd18O')
 YVar = temp_df['d18O_mean'].to_numpy() - standard('GLW', 'd18O')
+#YVar = ((temp_df['d18O_mean']/1000)+1)*(2005.20e-6)
+temp_df
 
 
 mod = ExpressionModel('offset + amplitude * x**exponent')
 result_GLW = mod.fit(YVar, x=XVar, offset = 4, amplitude = 1, exponent = 1)
 
 # Yongbiao Model --------------------------------------
-mod = ExpressionModel('a/x + b*x + c')
-result_GLW = mod.fit(YVar, x=XVar, a = 0, b = 1, c = 1)
+# mod = ExpressionModel('a/x + b*x + c')
+# result_GLW = mod.fit(YVar, x=XVar, a = 0, b = 1, c = 1)
 # -----------------------------------------------------
 r_squared = 1 - result_GLW.residual.var() / np.var(YVar)
 x_pred = np.linspace(1000, 20000)
@@ -56,6 +59,9 @@ ax.grid()
 print('Best fit result ----------------')
 for j in result_GLW.best_values:
     print(j, '= ', result_GLW.best_values[j])
+print("Mean ± 1std d18O observed: %.2f±%.2f" % ( 
+      np.mean(temp_df['d18O_mean']), 
+      np.std(temp_df['d18O_mean'], ddof=1)))
 print('--------------------------------')
 #%%
 FIN20210921 = pd.read_pickle('FINSE_20210921_extended.pkl')
@@ -63,14 +69,16 @@ temp_df = FIN20210921.sort_values(by = ['H2O'])
 
 XVar = temp_df['H2O'].to_numpy()
 
+#YVar = temp_df['d18O_mean'].to_numpy() - standard('FINSE', 'd18O')
 YVar = temp_df['d18O_mean'].to_numpy() - standard('FINSE', 'd18O')
+#YVar = ((temp_df['d18O_mean']/1000)+1)*(2005.20e-6)
 
 mod = ExpressionModel('offset + amplitude * x**exponent')
 result_FIN = mod.fit(YVar, x=XVar, offset = 4, amplitude = 1, exponent = 1)
 
 # Yongbiao Model --------------------------------------
-mod = ExpressionModel('a/x + b*x + c')
-result_FIN = mod.fit(YVar, x=XVar, a = 0, b = 1, c = 1)
+# mod = ExpressionModel('a/x + b*x + c')
+# result_FIN = mod.fit(YVar, x=XVar, a = 0, b = 1, c = 1)
 # -----------------------------------------------------
 
 r_squared = 1 - result_FIN.residual.var() / np.var(YVar)
@@ -92,6 +100,9 @@ ax.grid()
 print('Best fit result ----------------')
 for j in result_FIN.best_values:
     print(j, '= ', result_FIN.best_values[j])
+print("Mean ± 1std d18O observed: %.2f±%.2f" % ( 
+      np.mean(temp_df['d18O_mean']), 
+      np.std(temp_df['d18O_mean'], ddof=1)))
 print('--------------------------------')
 
 #%% Fit BERMUDA d18O
@@ -101,12 +112,13 @@ temp_df = BER20210919.sort_values(by = ['H2O'])
 XVar = temp_df['H2O'].to_numpy()
 
 YVar = temp_df['d18O_mean'].to_numpy() - standard('BER', 'd18O')
+#YVar = ((temp_df['d18O_mean']/1000)+1)*(2005.20e-6)
 
 mod = ExpressionModel('offset + amplitude * x**exponent')
 result_BER = mod.fit(YVar, x=XVar, offset = 4, amplitude = 1, exponent = 1)
 # Yongbiao Model --------------------------------------
-mod = ExpressionModel('a/x + b*x + c')
-result_BER = mod.fit(YVar, x=XVar, a = 0, b = 1, c = 1)
+# mod = ExpressionModel('a/x + b*x + c')
+# result_BER = mod.fit(YVar, x=XVar, a = 0, b = 1, c = 1)
 # -----------------------------------------------------
 r_squared = 1 - result_BER.residual.var() / np.var(YVar)
 x_pred = np.linspace(1000, 20000)
@@ -127,6 +139,10 @@ ax.grid()
 print('Best fit result ----------------')
 for j in result_BER.best_values:
     print(j, '= ', result_BER.best_values[j])
+print('--------------------------------')
+print("Mean ± 1std d18O observed: %.2f±%.2f" % ( 
+      np.mean(temp_df['d18O_mean']), 
+      np.std(temp_df['d18O_mean'], ddof=1)))
 print('--------------------------------')
 
 #%% Single Plot with all standards
