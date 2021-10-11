@@ -16,9 +16,12 @@ import matplotlib.dates as mdates
 
 from hum_corr_fun import hum_corr_fun
 
+from scipy.signal import savgol_filter
+
+
 calibration_paramters = pd.read_pickle('Standard_reg_param.pkl')
 
-file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210919-DataLog_User.nc')
+file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210921-DataLog_User.nc')
 for dim in file2read.dimensions.values():
     print(dim)
 
@@ -63,31 +66,69 @@ Picarro_data_calibrated['dD'] = hum_corr_fun(Picarro_data['H2O'],
 Picarro_data_calibrated['d18O'] = Picarro_data_calibrated['d18O']*calibration_paramters['Slope_d18O'].iloc[IOI]+calibration_paramters['Intercept_d18O'].iloc[IOI]
 Picarro_data_calibrated['dD'] = Picarro_data_calibrated['dD']*calibration_paramters['Slope_dD'].iloc[IOI]+calibration_paramters['Intercept_dD'].iloc[IOI]
 
-#%% 
-idx_start   = 100000
-idx_stop    = 150000
+#%%
+idx_start = 250000
+idx_stop =  270000
+#idx_start = 25000 # Ok for deep profile example
+#idx_stop = 50000 # Ok for deep profile example
+#idx_start = 141500 # OK FLIGTH 10 DETAILS
+#idx_stop = 165000 # OK FLIGTH 10 DETAILS
+#date_format = mdates.DateFormatter("%H:%M:%S")
+date_format = mdates.DateFormatter("%H:%M")
+#idx_start   = 100000 # OK FOR CALIBRATION DETAIL
+#idx_stop    = 150000 # OK FOR CALIBRATION DETAIL
 fig, ax = plt.subplots(nrows=3)
 ax[0].plot(Picarro_data.index[idx_start:idx_stop], Picarro_data['d18O'][idx_start:idx_stop])
 ax[0].plot(Picarro_data_calibrated.index[idx_start:idx_stop], Picarro_data_calibrated['d18O'][idx_start:idx_stop])
 ax[0].grid()
+ax[0].xaxis.set_major_formatter(date_format)
 #ax[0].set_ylim(-5, 5)
 
 ax[1].plot(Picarro_data.index[idx_start:idx_stop], Picarro_data['dD'][idx_start:idx_stop])
 ax[1].plot(Picarro_data_calibrated.index[idx_start:idx_stop], Picarro_data_calibrated['dD'][idx_start:idx_stop])
 ax[1].grid()
 #ax[1].set_ylim(-10, 10)
+ax[1].xaxis.set_major_formatter(date_format)
 
 d_excess = Picarro_data['dD'] - 8* Picarro_data['d18O']
 d_excess_calibrated = Picarro_data_calibrated['dD'] - 8* Picarro_data_calibrated['d18O']
 ax[2].plot(Picarro_data.index[idx_start:idx_stop], d_excess[idx_start:idx_stop])
 ax[2].plot(Picarro_data_calibrated.index[idx_start:idx_stop], d_excess_calibrated[idx_start:idx_stop])
 ax[2].grid()
+ax[2].xaxis.set_major_formatter(date_format)
+#%% Plot dD and Altitude Flight 10
+fig, ax = plt.subplots(nrows = 2, figsize = (15, 10))
+yhat = savgol_filter(Picarro_data['dD'][idx_start:idx_stop], 101, 1)
+yhat_calib = savgol_filter(Picarro_data_calibrated['dD'][idx_start:idx_stop], 101, 1)
+ax[0].plot(Picarro_data.index[idx_start:idx_stop], yhat)
+ax[0].plot(Picarro_data_calibrated.index[idx_start:idx_stop], yhat_calib)
+ax[0].grid()
+#ax[1].set_ylim(-10, 10)
+ax[0].xaxis.set_major_formatter(date_format)
+ax[0].set(ylabel = '$\delta$D [‰]')
+ax[0].legend(["RAW", "Calibrated"])
 
-#%% 
-idx_start   = 100000
-idx_stop    = 150000
+altitude = (-22286*np.log(AmbientPressure[idx_start:idx_stop]) + 148309)*0.3048
+ax[1].plot(Picarro_data.index[idx_start:idx_stop], altitude, color = 'r')
+ax[1].grid()
+#ax[1].set_ylim(-10, 10)
+ax[1].xaxis.set_major_formatter(date_format)
+ax[1].set(ylabel = 'Altitude [m ASL]')
+#%% Plot Humidity
+fig, ax = plt.subplots(figsize = (15, 5))
+yhat = savgol_filter(Picarro_data['H2O'][idx_start:idx_stop], 101, 1)
+yhat_calib = savgol_filter(Picarro_data_calibrated['dD'][idx_start:idx_stop], 101, 1)
+ax.plot(Picarro_data.index[idx_start:idx_stop], yhat, color = 'k')
+ax.grid()
+#ax[1].set_ylim(-10, 10)
+ax.xaxis.set_major_formatter(date_format)
+ax.set(ylabel = 'H$_2$O [ppm]')
+#ax.legend(["RAW", "Calibrated"])
 
+#%%
+yhat = savgol_filter(d_excess[idx_start:idx_stop], 101, 1)
+yhat_calib = savgol_filter(d_excess_calibrated[idx_start:idx_stop], 101, 1)
 fig, ax = plt.subplots()
-ax.plot(Picarro_data.index[idx_start:idx_stop], d_excess[idx_start:idx_stop])
-ax.plot(Picarro_data_calibrated.index[idx_start:idx_stop], d_excess_calibrated[idx_start:idx_stop])
+ax.plot(Picarro_data.index[idx_start:idx_stop], yhat[idx_start:idx_stop])
+ax.plot(Picarro_data.index[idx_start:idx_stop], yhat_calib[idx_start:idx_stop])
 ax.set_ylim(-50, 50)
