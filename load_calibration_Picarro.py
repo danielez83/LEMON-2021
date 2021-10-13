@@ -83,7 +83,9 @@ d = {'Date': dt_array,
      'Slope_d18O':np.zeros(len(days)),
      'Intercept_d18O':np.zeros(len(days)),
      'Slope_dD':np.zeros(len(days)),
-     'Intercept_dD':np.zeros(len(days))}
+     'Intercept_dD':np.zeros(len(days)),
+     'R2_d18O': np.zeros(len(days)), 
+     'R2_dD': np.zeros(len(days))}
 
 idx = 0
 
@@ -106,11 +108,13 @@ for day in days:
     # Save regression parameters
     d['Slope_d18O'][idx] = modeld18O.coef_
     d['Intercept_d18O'][idx] = modeld18O.intercept_
+    d['R2_d18O'][idx] = modeld18O.score(obs_vals_d18O.reshape((-1, 1)), std_vals_d18O)
     # Regress model
     modeldD = LinearRegression().fit(obs_vals_dD.reshape((-1, 1)), std_vals_dD)
     # Save regression parameters
     d['Slope_dD'][idx] = modeldD.coef_
     d['Intercept_dD'][idx] = modeldD.intercept_
+    d['R2_dD'][idx] = modeldD.score(obs_vals_dD.reshape((-1, 1)), std_vals_dD)
     
     idx+=1
         
@@ -119,3 +123,20 @@ for day in days:
 df = pd.DataFrame(data = d, index = d['Date'])
 df.drop(columns = 'Date', inplace = True)
 df.to_pickle(filename_to_save)
+
+#%% Plot calibration parameters
+fig, ax1 = plt.subplots(figsize = (11,10))
+ax2 = ax1.twinx()
+
+ax1.plot(df.index, df['Slope_d18O'], 'k-')
+ax2.plot(df.index, df['Slope_dD'], 'r--')
+
+ax1.set_ylabel('Slope $\delta^{18}$O', fontsize=24)
+ax1.tick_params(axis='both', which='major', labelsize=16)
+
+ax2.set_ylabel('Slope $\delta$D', fontsize=24, color = 'red')
+ax2.tick_params(axis='both', which='major', labelsize=16, colors='red')
+#ax2.set_yticks(np.linspace(0.914, 0.928, 9))
+
+ax1.grid()
+
