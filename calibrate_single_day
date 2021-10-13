@@ -55,14 +55,14 @@ IOI = np.where(tot==True)
 IOI = IOI[0][0]
 
 Picarro_data_calibrated = Picarro_data.copy()
-# Humidity correction
+# Humidity-isotope correction
 Picarro_data_calibrated['d18O'] = hum_corr_fun(Picarro_data['H2O'], 
                                                Picarro_data['d18O'], 
                                                18, 17000, 'mean')
 Picarro_data_calibrated['dD'] = hum_corr_fun(Picarro_data['H2O'], 
                                                Picarro_data['dD'], 
                                                2, 17000, 'mean')
-# Standard correction
+# Isotope calibration
 Picarro_data_calibrated['d18O'] = Picarro_data_calibrated['d18O']*calibration_paramters['Slope_d18O'].iloc[IOI]+calibration_paramters['Intercept_d18O'].iloc[IOI]
 Picarro_data_calibrated['dD'] = Picarro_data_calibrated['dD']*calibration_paramters['Slope_dD'].iloc[IOI]+calibration_paramters['Intercept_dD'].iloc[IOI]
 
