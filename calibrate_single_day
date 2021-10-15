@@ -18,6 +18,8 @@ from hum_corr_fun import hum_corr_fun
 
 from scipy.signal import savgol_filter
 
+from FARLAB_standards import standard
+
 
 calibration_paramters = pd.read_pickle('Standard_reg_param.pkl')
 
@@ -125,10 +127,42 @@ ax.xaxis.set_major_formatter(date_format)
 ax.set(ylabel = 'H$_2$O [ppm]')
 #ax.legend(["RAW", "Calibrated"])
 
-#%%
-yhat = savgol_filter(d_excess[idx_start:idx_stop], 101, 1)
-yhat_calib = savgol_filter(d_excess_calibrated[idx_start:idx_stop], 101, 1)
-fig, ax = plt.subplots()
-ax.plot(Picarro_data.index[idx_start:idx_stop], yhat[idx_start:idx_stop])
-ax.plot(Picarro_data.index[idx_start:idx_stop], yhat_calib[idx_start:idx_stop])
-ax.set_ylim(-50, 50)
+#%% Plot humidity, d18O dD, d-excess
+idx_start = 258000 # Standard spike
+idx_stop =  265000 # Standard spike
+fig, ax = plt.subplots(nrows=4, figsize = (10, 15))
+yhat_calib = savgol_filter(Picarro_data_calibrated['d18O'][idx_start:idx_stop], 11, 1)
+ax[0].plot([Picarro_data_calibrated.index[idx_start], Picarro_data_calibrated.index[idx_stop]], [standard('BER', 'd18O'), standard('BER', 'd18O')], 'r--')
+ax[0].plot(Picarro_data.index[idx_start:idx_stop], yhat_calib)
+ax[0].grid()
+ax[0].set_ylim(-30, 2)
+ax[0].xaxis.set_major_formatter(date_format)
+ax[0].set(ylabel = '$\delta^{18}$O [‰]')
+
+yhat_calib = savgol_filter(Picarro_data_calibrated['dD'][idx_start:idx_stop], 11, 1)
+ax[1].plot(Picarro_data.index[idx_start:idx_stop], yhat_calib)
+ax[1].plot([Picarro_data_calibrated.index[idx_start], Picarro_data_calibrated.index[idx_stop]], [standard('BER', 'dD'), standard('BER', 'dD')], 'r--')
+ax[1].grid()
+ax[1].set_ylim(-200, 20)
+ax[1].xaxis.set_major_formatter(date_format)
+ax[1].set(ylabel = '$\delta$D [‰]')
+
+expected_d = standard('BER', 'dD') - 8* standard('BER', 'd18O')
+
+yhat_calib = savgol_filter(Picarro_data_calibrated['dD'][idx_start:idx_stop] - 8*Picarro_data_calibrated['d18O'][idx_start:idx_stop] , 11, 1)
+ax[2].plot(Picarro_data.index[idx_start:idx_stop], yhat_calib)
+ax[2].plot([Picarro_data_calibrated.index[idx_start], Picarro_data_calibrated.index[idx_stop]], [expected_d, expected_d], 'r--')
+ax[2].grid()
+ax[2].set_ylim(-20, 45)
+ax[2].xaxis.set_major_formatter(date_format)
+ax[2].set(ylabel = 'd-excess [‰]')
+
+yhat_calib = savgol_filter(Picarro_data_calibrated['H2O'][idx_start:idx_stop], 11, 1)
+ax[3].plot(Picarro_data.index[idx_start:idx_stop], yhat_calib)
+ax[3].grid()
+ax[3].set_ylim(1000, 11000)
+ax[3].xaxis.set_major_formatter(date_format)
+ax[3].set(ylabel = 'H$_2$O [ppm]')
+
+
+
