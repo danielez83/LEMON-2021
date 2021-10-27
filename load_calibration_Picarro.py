@@ -19,8 +19,9 @@ from hum_corr_fun import hum_corr_fun
 from FARLAB_standards import standard
 
 #%% Configuration
-filename = "../Picarro_HIDS2254/Standard_Table.txt"
-filename_to_save = "Standard_reg_param.pkl"
+filename            = "../Picarro_HIDS2254/Standard_Table.txt"
+filename_to_save    = "Standard_reg_param_STD_corr.pkl"
+correction_type     = 'standard_based' #standard_based, mean
 
 
 #%% Load data into pandas 
@@ -31,10 +32,16 @@ calibration_data.index = pd.to_datetime(calibration_data['Date'],
 calibration_data.drop('Date', axis = 1, inplace = True)
 
 #%% Apply humidity correction
-calibration_data['d18O'] = hum_corr_fun(calibration_data['H20'], calibration_data['d18O'],
-                                        18, 17000, 'mean')
-calibration_data['dD'] = hum_corr_fun(calibration_data['H20'], calibration_data['dD'],
-                                        2, 17000, 'mean')
+if correction_type == 'mean':
+    calibration_data['d18O'] = hum_corr_fun(calibration_data['H20'], calibration_data['d18O'],
+                                            18, 17000, 'mean')
+    calibration_data['dD'] = hum_corr_fun(calibration_data['H20'], calibration_data['dD'],
+                                          2, 17000, 'mean')
+elif correction_type == 'standard_based':
+    calibration_data['d18O'] = hum_corr_fun(calibration_data['H20'], calibration_data['d18O'],
+                                            18, 17000, calibration_data['Standard'].all())
+    calibration_data['dD'] = hum_corr_fun(calibration_data['H20'], calibration_data['dD'],
+                                          2, 17000, calibration_data['Standard'].all())
 
 # %% Plot section for Bermuda standard
 # Plot calibration trend for 

@@ -17,10 +17,10 @@ from hum_corr_fun import hum_corr_fun
 
 #%% Configuration
 #iMet_filename               = '../iMet/44508/iMet-XQ2-44508_20210918.nc'
-Picarro_filename            = '../Picarro_HIDS2254/2021/09/HIDS2254-20210917-DataLog_User.nc'
+Picarro_filename            = '../Picarro_HIDS2254/2021/09/HIDS2254-20210918-DataLog_User.nc'
 Flight_table_filename       = '../Excel/Flights_Table.csv'
-Flight_OI                   =  3#[2,3]#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
-Calibration_param_filename  = 'Standard_reg_param_STD_corr.pkl'
+Flight_OI                   =  7#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
+Calibration_param_filename  = 'Standard_reg_param.pkl'
 display                     = 'binned' #'raw', 'binned'
 bin_mode                    = 'auto' #'auto', 'manual'
 bins                        = np.arange(400, 20000, 400)
@@ -215,3 +215,35 @@ elif display == 'binned':
 else:
     print("Display off")
 
+#%%
+fig, ax = plt.subplots(ncols = 3, figsize=(10,15))
+plt.subplots_adjust(wspace = .05) 
+ax[0].plot(data4['H2O'], data4['alt'], linewidth=2, color = [0,0,0], linestyle='solid')
+ax[0].plot(data5['H2O'], data5['alt'], linewidth=2, color = [0,0,0], linestyle='dotted')
+ax[0].plot(data6['H2O'], data6['alt'], linewidth=2, color = [0,0,0], linestyle='dashed')
+#ax[0].plot(data7['H2O'], data7['alt'], linewidth=1, color = [0,0,0], linestyle='dashdot')
+ax[0].set_ylim(500,1800)
+ax[0].grid()
+ax[0].set_xlabel('H$_2$O [ppm]', fontsize=18)
+ax[0].set_ylabel('Altitude [m AMSL]', fontsize=18)
+ax[0].tick_params(axis='both', which='major', labelsize=14)
+
+ax[1].plot(data4['dD'], data4['alt'], linewidth=2, color = [1,0,0], linestyle='solid')
+ax[1].plot(data5['dD'], data5['alt'], linewidth=2, color = [1,0,0], linestyle='dotted')
+ax[1].plot(data6['dD'], data6['alt'], linewidth=2, color = [1,0,0], linestyle='dashed')
+#ax[0].plot(data7['H2O'], data7['alt'], linewidth=1, color = [0,0,0], linestyle='dashdot')
+ax[1].set_ylim(500,1800)
+ax[1].grid()
+ax[1].yaxis.set_ticklabels([])
+ax[1].set_xlabel('$\delta$D [‰]', fontsize=18)
+ax[1].tick_params(axis='both', which='major', labelsize=14)
+
+ax[2].plot(data4['d'], data4['alt'], linewidth=2, color = [0,0,1], linestyle='solid')
+ax[2].plot(data5['d'], data5['alt'], linewidth=2, color = [0,0,1], linestyle='dotted')
+ax[2].plot(data6['d'], data6['alt'], linewidth=2, color = [0,0,1], linestyle='dashed')
+#ax[0].plot(data7['H2O'], data7['alt'], linewidth=1, color = [0,0,0], linestyle='dashdot')
+ax[2].set_ylim(500,1800)
+ax[2].grid()
+ax[2].yaxis.set_ticklabels([])
+ax[2].tick_params(axis='both', which='major', labelsize=14)
+ax[2].set_xlabel('d-excess [‰]', fontsize=18)
