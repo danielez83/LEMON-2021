@@ -22,7 +22,7 @@ from calibrate_picarro_data import calibrate_picarro_data
 
 #%% Configuration
 Picarro_filename            = '../Picarro_HIDS2254/2021/09/HIDS2254-20210920-DataLog_User (1).nc'
-acc_filename                = '../Accelerometer/2021-09-2008.38.09.csv'
+acc_filename                = '../Accelerometer/2021-09-2017.59.12.csv'
 ref_date_for_acc            = '2021-09-20'
 
 resample_T                  = 0.5 # seconds, 2Hz is ok for comparison
@@ -97,8 +97,8 @@ df_Picarro_calib = df_Picarro_calib.resample(buff_txt).mean()
 df_acc_data = df_acc_data.resample(buff_txt).mean()
 
 #%% Plot time series of specified intervals
-start_date_str              = '2021-09-20 8:27:00'
-stop_date_str               = '2021-09-20 8:27:30'
+start_date_str              = '2021-09-20 15:58:00'
+stop_date_str               = '2021-09-20 16:00:00'
 
 
 start_date = pd.to_datetime(datetime.datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S'))
@@ -116,4 +116,6 @@ df_acc_data['aT (m/s^2)'][(df_acc_data.index > start_date) & (df_acc_data.index 
 ax[1].grid(which = 'both')
 ax[1].set_ylabel('aT (m/s^2)')
 ax[1].set_xlim(ax[0].get_xlim())
+
+plt.show()
 

@@ -14,7 +14,7 @@ import netCDF4 as nc
 #from scipy.stats import linregress
 import matplotlib.dates as mdates
 
-from hum_corr_fun import hum_corr_fun
+from hum_corr_fun import hum_corr_fun_v2 as hum_corr_fun
 
 #%% Configuration
 #iMet_filename      = '../iMet/44508/iMet-XQ2-44508_20210918.nc'

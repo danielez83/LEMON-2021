@@ -14,7 +14,7 @@ import matplotlib.dates as mdates
 
 from sklearn.linear_model import LinearRegression
 
-from hum_corr_fun import hum_corr_fun
+from hum_corr_fun import hum_corr_fun_v2 as hum_corr_fun
 
 from FARLAB_standards import standard
 
@@ -32,16 +32,30 @@ calibration_data.index = pd.to_datetime(calibration_data['Date'],
 calibration_data.drop('Date', axis = 1, inplace = True)
 
 #%% Apply humidity correction
+# if correction_type == 'mean':
+#     calibration_data['d18O'] = hum_corr_fun(calibration_data['H20'], calibration_data['d18O'],
+#                                             18, 18000, 'mean')
+#     calibration_data['dD'] = hum_corr_fun(calibration_data['H20'], calibration_data['dD'],
+#                                           2, 18000, 'mean')
+# elif correction_type == 'standard_based':
+#     calibration_data['d18O'] = hum_corr_fun(calibration_data['H20'], calibration_data['d18O'],
+#                                             18, 18000, calibration_data['Standard'].all())
+#     calibration_data['dD'] = hum_corr_fun(calibration_data['H20'], calibration_data['dD'],
+#                                           2, 18000, calibration_data['Standard'].all())
+#%% Apply humidity correction
 if correction_type == 'mean':
     calibration_data['d18O'] = hum_corr_fun(calibration_data['H20'], calibration_data['d18O'],
-                                            18, 17000, 'mean')
+                                            18, 18000, 'mean')
     calibration_data['dD'] = hum_corr_fun(calibration_data['H20'], calibration_data['dD'],
-                                          2, 17000, 'mean')
+                                          2, 18000, 'mean')
 elif correction_type == 'standard_based':
-    calibration_data['d18O'] = hum_corr_fun(calibration_data['H20'], calibration_data['d18O'],
-                                            18, 17000, calibration_data['Standard'].all())
-    calibration_data['dD'] = hum_corr_fun(calibration_data['H20'], calibration_data['dD'],
-                                          2, 17000, calibration_data['Standard'].all())
+    for curr_std in calibration_data['Standard']:
+        calibration_data['d18O'][calibration_data['Standard'] == curr_std] = hum_corr_fun(calibration_data['H20'][calibration_data['Standard'] == curr_std], 
+                                                                                          calibration_data['d18O'][calibration_data['Standard'] == curr_std],
+                                                                                          18, 18000, curr_std)  
+        calibration_data['dD'][calibration_data['Standard'] == curr_std] = hum_corr_fun(calibration_data['H20'][calibration_data['Standard'] == curr_std], 
+                                                                                        calibration_data['dD'][calibration_data['Standard'] == curr_std],
+                                                                                        2, 18000, curr_std)  
 
 # %% Plot section for Bermuda standard
 # Plot calibration trend for 

@@ -13,7 +13,7 @@ import datetime
 import netCDF4 as nc
 #from scipy.stats import linregress
 
-from hum_corr_fun import hum_corr_fun
+from hum_corr_fun import hum_corr_fun_v2 as hum_corr_fun
 
 #%% Configuration
 #iMet_filename               = '../iMet/44508/iMet-XQ2-44508_20210918.nc'
@@ -107,7 +107,7 @@ else:
 
 # Humidity calibration, using OPTISONDE relationship
 if calibrate_humidity == 'yes':
-    Picarro_data_calibrated['H2O'] = Picarro_data_calibrated['H2O']*0.857 - 6.431
+    Picarro_data_calibrated['H2O'] = Picarro_data_calibrated['H2O']*0.957 - 6.431
 else:
     Picarro_data_calibrated['H2O'] = Picarro_data_calibrated['H2O']
 

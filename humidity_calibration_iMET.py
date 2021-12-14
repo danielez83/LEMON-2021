@@ -72,7 +72,7 @@ ncdate_pd_picarro = pd.to_datetime(ncdate_picarro)
 # Save data as pandas df
 df_Picarro = pd.DataFrame(data = {'H2O':H2O}, index = ncdate_pd_picarro)
 # Resample and center at 1 sec freq
-df_Picarro = df_Picarro['H2O'].resample("1S").mean()
+#df_Picarro = df_Picarro['H2O'].resample("1S").mean()
 
 #%% Import Flights table to filter only flight time
 df_Flight_table = pd.read_csv('../Excel/Flights_Table.csv')
@@ -181,4 +181,19 @@ ax.grid()
 #ax.text(5000, 15500, "Delay=%d seconds" % best_delay, size=20)
 ax.text(4000, 13500, "y = %.3f*x+%.3f" % (slope, intercept), size=20)
 ax.text(4000, 13000, "R$^2$=%.3f" % r_value**2, size=20)
-ax.text(4000, 12500, "Delay=%d seconds" % best_delay, size=20)    
+ax.text(4000, 12500, "Delay=%d seconds" % best_delay, size=20)
+
+#%% Plot humidity time series
+fig, ax = plt.subplots(figsize=(10,5))
+ax.plot(df_Picarro_flights.index, df_Picarro_flights*1.007+85.590, label = 'Picarro')
+ax.plot(df_iMet_flights.index, df_iMet_flights, label = 'iMet XQ2')
+ax.legend()
+ax.grid()
+#%% Plot humidity time series zoom
+fig, ax = plt.subplots(figsize=(10,5))
+ax.plot(df_Picarro_flights.index - datetime.timedelta(seconds = 12), df_Picarro_flights*1.007+85.590, label = 'Picarro')
+ax.plot(df_iMet_flights.index, df_iMet_flights, label = 'iMet XQ2')
+ax.legend()
+ax.set_xlim([pd.to_datetime('2021-09-18 12:59'), pd.to_datetime('2021-09-18 13:05')])
+ax.set_ylim([14000, 17000])
+ax.grid()

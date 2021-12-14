@@ -42,7 +42,7 @@ def calibrate_picarro_data(df_Picarro_raw, Calibration_param_filename, calibrate
     
     # Humidity calibration, using OPTISONDE relationship
     if calibrate_humidity == 'yes':
-        df_Picarro_data_calibrated['H2O'] = df_Picarro_data_calibrated['H2O']*0.857 - 6.431
+        df_Picarro_data_calibrated['H2O'] = df_Picarro_data_calibrated['H2O']*0.957 - 6.431
     else:
         df_Picarro_data_calibrated['H2O'] = df_Picarro_data_calibrated['H2O']
         

@@ -13,15 +13,15 @@ import datetime
 import netCDF4 as nc
 #from scipy.stats import linregress
 
-from hum_corr_fun import hum_corr_fun
+from hum_corr_fun import hum_corr_fun_v2 as hum_corr_fun
 
 #%% Configuration
 #iMet_filename               = '../iMet/44508/iMet-XQ2-44508_20210918.nc'
-Picarro_filename            = '../Picarro_HIDS2254/2021/09/HIDS2254-20210917-DataLog_User.nc'
+Picarro_filename            = '../Picarro_HIDS2254/2021/09/HIDS2254-20210923-DataLog_User.nc'
 Flight_table_filename       = '../Excel/Flights_Table.csv'
-Flight_OI                   =  3#[2,3]#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
+Flight_OI                   =  16#[2,3]#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
 Calibration_param_filename  = 'Standard_reg_param_STD_corr.pkl'
-display                     = 'binned' #'raw', 'binned'
+display                     = 'raw' #'raw', 'binned'
 bin_mode                    = 'auto' #'auto', 'manual'
 bins                        = np.arange(400, 20000, 400)
 calibrate_isotopes          = 'yes'
@@ -107,7 +107,7 @@ else:
 
 # Humidity calibration, using OPTISONDE relationship
 if calibrate_humidity == 'yes':
-    Picarro_data_calibrated['H2O'] = Picarro_data_calibrated['H2O']*0.857 - 6.431
+    Picarro_data_calibrated['H2O'] = Picarro_data_calibrated['H2O']*0.957 - 6.431
 else:
     Picarro_data_calibrated['H2O'] = Picarro_data_calibrated['H2O']
 
@@ -116,21 +116,25 @@ if display == 'raw':
     fig, ax = plt.subplots(ncols=3, figsize=(10,15))
     plt.subplots_adjust(wspace = .05) 
     ax[0].scatter(Picarro_data_calibrated['H2O'], Torr2meters(df_Picarro_subset['AmbientPressure']),
-                  s = 16, marker = 'o', facecolors='none', edgecolors='k')
+                  s = 16, marker = 'o', facecolors='none', 
+                  c = Picarro_data_calibrated.index, cmap = 'jet') #edgecolors='k')
+                  
     ax[0].set_xlabel('H$_2$O [ppm]', fontsize=18)
     ax[0].set_ylabel('Altitude [m AMSL]', fontsize=18)
     ax[0].tick_params(axis='both', which='major', labelsize=14)
     ax[0].grid()
     
     ax[1].scatter(Picarro_data_calibrated['dD'], Torr2meters(df_Picarro_subset['AmbientPressure']),
-                  s = 16, marker = 'o', facecolors='none', edgecolors='r')
+                  s = 16, marker = 'o', facecolors='none',
+                  c = Picarro_data_calibrated.index, cmap = 'jet') #edgecolors='k')#edgecolors='r')
     ax[1].grid()
     ax[1].tick_params(axis='both', which='major', labelsize=14)
     ax[1].yaxis.set_ticklabels([])
     ax[1].set_xlabel('$\delta$D [‰]', fontsize=18)
     
     ax[2].scatter(Picarro_data_calibrated['dD']-8*Picarro_data_calibrated['d18O'], Torr2meters(df_Picarro_subset['AmbientPressure']),
-                  s = 16, marker = 'o', facecolors='none', edgecolors='b')
+                  s = 16, marker = 'o', facecolors='none',
+                  c = Picarro_data_calibrated.index, cmap = 'jet') #edgecolors='k')edgecolors='b')
     ax[2].grid()
     ax[2].tick_params(axis='both', which='major', labelsize=14)
     ax[2].yaxis.set_ticklabels([])
