@@ -114,25 +114,57 @@ def hum_corr_fun_v2(h2o, delta_raw, isotope, ref_level, correction):
         b = 0
         # Chose fitting parameters --------------------------------------------
         if correction == 'mean': # Use only GLW and FINSE
-            offset      = mean([-0.1504144982664188, -0.06227032189174321])
-            amplitude   = mean([1.070301863755927, 1.0538273137810708])
-            b           = mean([-0.00012824517621849688, -0.00014474400748255454])
+            #offset      = mean([-0.1504144982664188, -0.06227032189174321])
+            #amplitude   = mean([1.070301863755927, 1.0538273137810708])
+            #b           = mean([-0.00012824517621849688, -0.00014474400748255454])
+            #--- Estimate GLW correction
+            offset              = -0.1504144982664188
+            amplitude           = 1.070301863755927
+            b                   = -0.00012824517621849688
+            GLW_corr_base       = offset + amplitude * exp(b*ref_level)
+            GLW_corr_observed   = offset + amplitude * exp(b*h2o)
+            #--- Estimate FIN correction
+            offset              = -0.06227032189174321
+            amplitude           = 1.0538273137810708
+            b                   = -0.00014474400748255454 
+            FIN_corr_base       = offset + amplitude * exp(b*ref_level)
+            FIN_corr_observed   = offset + amplitude * exp(b*h2o)
+            #--- Estimate relative weights based on raw dD measured
+            d18O_FIN            = standard('FINSE', 'd18O')
+            d18O_GLW            = standard('GLW', 'd18O')
+            x                   = (delta_raw - d18O_FIN)/(d18O_GLW - d18O_FIN)
+            base                = FIN_corr_base*(1-x) + GLW_corr_base*x
+            observed            = FIN_corr_observed*(1-x) + GLW_corr_observed*x
+            return delta_raw - (observed - base)
+            
         elif correction == 'GLW':
             offset      =  -0.1504144982664188
             amplitude   =  1.070301863755927
-            b           =  -0.00012824517621849688 
+            b           =  -0.00012824517621849688
+            # Apply function -----------------------------------------------------
+            base        =  offset + amplitude * exp(b*ref_level)
+            observed    = offset + amplitude * exp(b*h2o)
+            return delta_raw - (observed - base)
         elif correction == 'FINSE':
             offset      =  -0.06227032189174321
             amplitude   =  1.0538273137810708
             b           =  -0.00014474400748255454 
+            # Apply function -----------------------------------------------------
+            base        =  offset + amplitude * exp(b*ref_level)
+            observed    = offset + amplitude * exp(b*h2o)
+            return delta_raw - (observed - base)
         elif correction == 'BER':
             offset      =  -1063.700284143874
             amplitude   =  1064.3363757714112
-            b           =  -2.3911906420482837e-08         
+            b           =  -2.3911906420482837e-08
+            # Apply function -----------------------------------------------------
+            base        =  offset + amplitude * exp(b*ref_level)
+            observed    = offset + amplitude * exp(b*h2o)
+            return delta_raw - (observed - base)
         # Apply function -----------------------------------------------------
-        base        =  offset + amplitude * exp(b*ref_level)
-        observed    = offset + amplitude * exp(b*h2o)
-        return delta_raw - (observed - base)
+        #base        =  offset + amplitude * exp(b*ref_level)
+        #observed    = offset + amplitude * exp(b*h2o)
+        #return delta_raw - (observed - base)
         #correction_val = offset + amplitude * exp(b*h2o)
         #return delta_raw - correction_val
     
