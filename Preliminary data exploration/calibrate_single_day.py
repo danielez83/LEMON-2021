@@ -21,9 +21,9 @@ from scipy.signal import savgol_filter
 from FARLAB_standards import standard
 
 
-calibration_paramters = pd.read_pickle('Standard_reg_param.pkl')
+calibration_paramters = pd.read_pickle('../Standard_reg_param.pkl')
 
-file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210921-DataLog_User.nc')
+file2read = nc.Dataset('../../Picarro_HIDS2254/2021/09/HIDS2254-20210921-DataLog_User.nc')
 for dim in file2read.dimensions.values():
     print(dim)
 
