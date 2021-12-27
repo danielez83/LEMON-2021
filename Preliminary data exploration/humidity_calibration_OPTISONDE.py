@@ -19,14 +19,14 @@ import netCDF4 as nc
 from scipy.stats import linregress
 
 #%% Import OPTISONDE data
-filename = '../Picarro_HIDS2254/OPTISONDE_readings.txt'
+filename = '../../Picarro_HIDS2254/OPTISONDE_readings.txt'
 OPTISONDE = pd.read_csv(filename, delimiter=',')
 OPTISONDE.index = pd.to_datetime(OPTISONDE['Time'], 
                                  format= '%d/%m/%Y %H:%M')
 OPTISONDE.drop(columns=['Time'], inplace = True)
 
 #%% Import PICARRO data
-file2read = nc.Dataset('../Picarro_HIDS2254/2021/09/HIDS2254-20210921-DataLog_User.nc')
+file2read = nc.Dataset('../../Picarro_HIDS2254/2021/09/HIDS2254-20210921-DataLog_User.nc')
 for dim in file2read.dimensions.values():
     print(dim)
 

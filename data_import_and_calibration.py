@@ -40,8 +40,10 @@ calibrate_isotopes          = 'yes'
 calibrate_humidity          = 'yes'
 
 # General
-start_date_str              = '2021-09-23 8:05:00'
-stop_date_str               = '2021-09-23 9:45:00'
+Flight_table_filename       = '../Excel/Flights_Table.csv'
+Flight_OI                   =  2#[2,3]#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
+#start_date_str              = '2021-09-23 8:05:00'
+#stop_date_str               = '2021-09-23 9:45:00'
 output_dir                  = '../PKL intermediate data/'
 
 #%% Import PICARRO data
