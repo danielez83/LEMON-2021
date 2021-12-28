@@ -20,10 +20,10 @@ import netCDF4 as nc
 from scipy.stats import linregress
 
 #%% Configuration
-iMet_filename           = '../../iMet/44508/iMet-XQ2-44508_20210918.nc'
-Picarro_filename        = '../../Picarro_HIDS2254/2021/09/HIDS2254-20210918-DataLog_User.nc'
+iMet_filename           = '../../iMet/44508/iMet-XQ2-44508_20210923.nc'
+Picarro_filename        = '../../Picarro_HIDS2254/2021/09/HIDS2254-20210923-DataLog_User.nc'
 Flight_table_filename   = '../../Excel/Flights_Table.csv'
-Flights_OI =  [4] #[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
+Flights_OI =  [16] #[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
 
 #%% Import iMet data
 file2read = nc.Dataset(iMet_filename)
@@ -145,16 +145,16 @@ print("Based on humidity, delay is: ", best_delay_hum, 'seconds')
 best_delay_P = np.where(r_squared_P == np.max(r_squared_P))[0][0]
 print("Based on pressure, delay is: ", best_delay_P, 'seconds')
 
-#%% Fit best model
-X_Picarro = df_Picarro_flights.iloc[best_delay:].to_numpy()
-Y_iMet = df_iMet_flights.iloc[0:len(df_iMet_flights) - best_delay].to_numpy()
-X_Picarro = X_Picarro[~np.isnan(Y_iMet)]
-Y_iMet = Y_iMet[~np.isnan(Y_iMet)]
-# Fit model
-slope, intercept, r_value, p_value, std_err = linregress(X_Picarro,
-                                                         Y_iMet)
-XVals = np.linspace(df_Picarro_flights.min(), df_Picarro_flights.max(), 100)
-YVals = XVals*slope + intercept
+# #%% Fit best model
+# X_Picarro_hum   = df_Picarro_flights.iloc[best_delay_hum:].to_numpy()
+# Y_iMet_hum      = df_iMet_flights.iloc[0:len(df_iMet_flights) - best_delay_hum].to_numpy()
+# X_Picarro_hum   = X_Picarro_hum[~np.isnan(Y_iMet_hum)]
+# Y_iMet_hum      = Y_iMet_hum[~np.isnan(Y_iMet_hum)]
+# # Fit model
+# slope, intercept, r_value, p_value, std_err = linregress(X_Picarro,
+#                                                          Y_iMet)
+# XVals = np.linspace(df_Picarro_flights.min(), df_Picarro_flights.max(), 100)
+# YVals = XVals*slope + intercept
 
 
 #%% Plot iMet vs PICARRO
@@ -195,11 +195,3 @@ ax[1].plot(df_Picarro_flights.index, df_Picarro_flights['P']+20, label = 'Picarr
 ax[1].plot(df_iMet_flights.index, df_iMet_flights['P'], label = 'iMet XQ2')
 ax[1].legend()
 ax[1].grid()
-#%% Plot humidity time series zoom
-fig, ax = plt.subplots(figsize=(10,5))
-ax.plot(df_Picarro_flights.index - datetime.timedelta(seconds = 12), df_Picarro_flights*1.007+85.590, label = 'Picarro')
-ax.plot(df_iMet_flights.index, df_iMet_flights, label = 'iMet XQ2')
-ax.legend()
-ax.set_xlim([pd.to_datetime('2021-09-18 12:59'), pd.to_datetime('2021-09-18 13:05')])
-ax.set_ylim([14000, 17000])
-ax.grid()

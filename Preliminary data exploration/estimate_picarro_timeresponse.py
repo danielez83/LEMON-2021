@@ -27,11 +27,37 @@ Calibration_param_filename  = '../Standard_reg_param_STD_corr.pkl'
 calibrate_isotopes          = 'yes'
 calibrate_humidity          = 'yes'
 
-start_date_str              = '2021-09-23 8:05:00'
-stop_date_str               = '2021-09-23 9:45:00'
+# Comment/Uncomment the step change of interest
+# Calibration 2.1 RISING iso
+start_date_str              = '2021-09-18 13:38:00'
+stop_date_str               = '2021-09-18 13:42:00'
+# Calibration 2.1 FALLING iso
+start_date_str              = '2021-09-18 14:02:00'
+stop_date_str               = '2021-09-18 14:06:00'
+# Calibration 3.1 RISING iso
+start_date_str              = '2021-09-19 06:50:00'
+stop_date_str               = '2021-09-19 06:54:00'
+# Calibration 3.2 FALLING iso
+start_date_str              = '2021-09-19 07:12:00'
+stop_date_str               = '2021-09-19 07:16:00'
+# Calibration 4.6 RISING humidity
+start_date_str              = '2021-09-20 15:52:00'
+stop_date_str               = '2021-09-20 15:56:00'
+# Calibration 7.1 RISING iso
+start_date_str              = '2021-09-23 06:35:00'
+stop_date_str               = '2021-09-23 06:39:00'
+# Calibration 7.2 FALLING humidity
+start_date_str              = '2021-09-23 07:09:00'
+stop_date_str               = '2021-09-23 07:13:00'
+# Calibration 7.2 RISING humidity
+start_date_str              = '2021-09-23 07:15:00'
+stop_date_str               = '2021-09-23 07:19:00'
+# Calibraiton 7.3 FALLING iso
+start_date_str              = '2021-09-23 07:19:00'
+stop_date_str               = '2021-09-23 07:23:00'
 
 #%% Highlight section --------------------------------------------------------
-SOI = 1
+SOI = 0
 # Calibrations ---------------------------------------------------------------
 # start_SOI                   = ['2021-09-17 17:55:00', '2021-09-17 18:09:00']
 # stop_SOI                    = ['2021-09-17 18:02:00', '2021-09-17 18:16:00']
