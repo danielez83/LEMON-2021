@@ -37,8 +37,8 @@ stop_date_str               = '2021-09-18 13:42:00'
 # start_date_str              = '2021-09-20 15:52:00'
 # stop_date_str               = '2021-09-20 15:56:00'
 # # Calibration 7.1 RISING iso
-# start_date_str              = '2021-09-23 06:35:00'
-# stop_date_str               = '2021-09-23 06:39:00'
+#start_date_str              = '2021-09-23 06:35:00'
+#stop_date_str               = '2021-09-23 06:39:00'
 # # Calibration 7.2 FALLING humidity
 # start_date_str              = '2021-09-23 07:09:00'
 # stop_date_str               = '2021-09-23 07:13:00'
@@ -84,42 +84,119 @@ stop_date = datetime.datetime.strptime(stop_date_str, '%Y-%m-%d %H:%M:%S')
 
 df_Picarro_subset = df_Picarro[(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)]
 
-#%% Find locations of interest in timeseries
-# Valve switch
+#%% Calculate delays between switching valve and signal
+# NOW WORKING ONLY FOR RISING EDGE, ISOTOPES
+
+# Find when the valve status switches/changes
 index_switch = np.where(np.diff(df_Picarro_subset['ValveMask']) != 0)[0][0]
+
+# Find the ~middle of risingin/falling edge
+win_segment = [100, 50]
 if Variable_name == 'Delta_D_H':
     #plt.plot(np.diff(df_Picarro_subset['Delta_D_H']))
     if Edge == 'falling':
         index_max = np.where(np.diff(df_Picarro_subset['Delta_D_H']) == np.min(np.diff(df_Picarro_subset['Delta_D_H'])))[0][0]
     elif Edge == 'rising':
         index_max = np.where(np.diff(df_Picarro_subset['Delta_D_H']) == np.max(np.diff(df_Picarro_subset['Delta_D_H'])))[0][0]
-else:
+        # d18O
+        segment_of_interest = df_Picarro_subset['Delta_18_16'].iloc[index_max-100:index_max-50]
+        val_threshold = np.mean(segment_of_interest) + 2* np.std(segment_of_interest)
+        index_start = index_max
+        curr_val = df_Picarro_subset['Delta_18_16'].iloc[index_start]
+        while curr_val > val_threshold:
+            curr_val =  df_Picarro_subset['Delta_18_16'].iloc[index_start]
+            index_start-=1
+        d18O_rising_start = df_Picarro_subset.index[index_start]
+        # dD
+        segment_of_interest = df_Picarro_subset['Delta_D_H'].iloc[index_max-win_segment[0]:index_max-win_segment[1]]
+        val_threshold = np.mean(segment_of_interest) + 2* np.std(segment_of_interest)
+        index_start = index_max
+        curr_val = df_Picarro_subset['Delta_D_H'].iloc[index_start]
+        while curr_val > val_threshold:
+            curr_val =  df_Picarro_subset['Delta_D_H'].iloc[index_start]
+            index_start-=1
+        dD_rising_start = df_Picarro_subset.index[index_start]
+        # Calculate delays in seconds
+        d18O_delay  = d18O_rising_start - df_Picarro_subset.index[index_switch]
+        d18O_delay  = d18O_delay.seconds + (d18O_delay.microseconds*1e-6)
+        dD_delay    = dD_rising_start - df_Picarro_subset.index[index_switch]
+        dD_delay    = dD_delay.seconds + (dD_delay.microseconds*1e-6)
+        
+elif Variable_name == 'H2O':
     plt.plot(np.diff(df_Picarro_subset['H2O']))
+    if Edge == 'falling':
+        index_max = np.where(np.diff(df_Picarro_subset['H2O']) == np.min(np.diff(df_Picarro_subset['H2O'])))[0][0]
+    elif Edge == 'rising':
+        index_max = np.where(np.diff(df_Picarro_subset['H2O']) == np.max(np.diff(df_Picarro_subset['H2O'])))[0][0]    
 
-#%%
-fig, ax = plt.subplots(nrows = 4, figsize = (15,10))
+#%% Calculate response time t(63.2%)
+# Assuming a first-order system, see equation 11.21 in
+# https://folk.ntnu.no/skoge/prosessregulering_lynkurs/literature/3.Skogestad_pages_from_Process-engineering_ch11.pdf
+val_to_reach_scale = 0.632
+win_segment_backward = [50, 0]
+win_segment_forward = [450, 500]
+d18O_segment_of_interest = df_Picarro_subset['Delta_18_16'].iloc[index_switch - win_segment_backward[0] : index_switch + win_segment_forward[1]]
+dD_segment_of_interest = df_Picarro_subset['Delta_D_H'].iloc[index_switch - win_segment_backward[0] : index_switch + win_segment_forward[1]]
+H2O_segment_of_interest = df_Picarro_subset['H2O'].iloc[index_switch - win_segment_backward[0] : index_switch + win_segment_forward[1]]
+# Normalize segments
+d18O_range = [np.mean(d18O_segment_of_interest[0:50]), np.mean(d18O_segment_of_interest[-50:-1])]
+dD_range = [np.mean(dD_segment_of_interest[0:50]), np.mean(dD_segment_of_interest[-50:-1])]
+H2O_range = [np.mean(H2O_segment_of_interest[0:50]), np.mean(H2O_segment_of_interest[-50:-1])]
+ 
+d18O_segment_of_interest = (d18O_segment_of_interest + abs(np.min(d18O_range)))/abs(np.diff(d18O_range)[0])
+dD_segment_of_interest = (dD_segment_of_interest + abs(np.min(dD_range)))/abs(np.diff(dD_range)[0])
+H2O_segment_of_interest = (H2O_segment_of_interest + abs(np.min(H2O_range)))/abs(np.diff(H2O_range)[0])
 
-# Plot isotopes
-df_Picarro['H2O'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[0])
-ax[0].grid(which = 'both')
-ax[0].set_ylabel('H$_2$O (ppm)')
-#ax[0].set_ylim([10000, 20000])
+# Find when the step change is above the threshold
+if Variable_name == 'Delta_D_H':
+    #plt.plot(np.diff(df_Picarro_subset['Delta_D_H']))
+    if Edge == 'falling':
+        print("Nothing")
+    elif Edge == 'rising':
+        index_tau_d18O = np.where(d18O_segment_of_interest > val_to_reach_scale)[0][0]
+        d18O_rising_tau = d18O_segment_of_interest.index[index_tau_d18O]
+        index_tau_dD = np.where(dD_segment_of_interest > val_to_reach_scale)[0][0]
+        dD_rising_tau = dD_segment_of_interest.index[index_tau_dD]
+    d18O_tau = (d18O_rising_tau - d18O_rising_start).seconds + ((d18O_rising_tau - d18O_rising_start).microseconds*1e-6)
+    dD_tau = (dD_rising_tau - dD_rising_start).seconds + ((dD_rising_tau - dD_rising_start).microseconds*1e-6)
+    
+#%% Print statistics
+# https://www.baranidesign.com/faq-articles/2019/5/6/difference-between-sensor-response-time-and-sensor-time-constant-tau
+response_scaling_factor = 5 # Assuming the response time is 5 times the time constant, see link above
+# https://www.researchgate.net/post/Are_the_terms_Time_constant_and_Reponse_time_of_a_sensor_the_same
 
-#df_Picarro['d18O'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[1], label = 'd18O raw')
-df_Picarro['Delta_18_16'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[1], label = 'd18O calibrated')
-ax[1].legend()
-ax[1].set_ylabel('$\delta^{18}$O (‰)')
-ax[1].grid(which = 'both')
+if Variable_name == 'Delta_D_H':
+    print("Timing statistics for isotopes")
+    print("d18O delay: %.2f s" % d18O_delay)
+    print("d18O time constant (tau): %.2f s" % d18O_tau)
+    print("d18O response timeL %.2f s" % (5*d18O_tau))
+    print("")
+    print("dD delay: %.2f s" % dD_delay)
+    print("dD time constant (tau): %.2f s" % dD_tau)
+    print("dD response timeL %.2f s" % (dD_tau*5))
+elif Variable_name == 'H2O':
+    print("None")
+        
 
-#df_Picarro['dD'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[2], label = 'dD raw')
-df_Picarro['Delta_D_H'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[2], label = 'dD calibrated')
-ax[2].scatter(df_Picarro_subset.index[index_max], df_Picarro_subset['Delta_D_H'].iloc[index_max])
-ax[2].legend()
-ax[2].set_ylabel('$\delta$D [‰]')
-ax[2].grid(which = 'both')
+#%% Plot curves
+fig, ax = plt.subplots(nrows = 3, figsize = (15,10), sharex = True)
+# Humidity
+ax[0].plot(H2O_segment_of_interest)
+ax[0].set_ylabel('Norm. humidity')
+ax[0].grid()
+if Variable_name == 'H2O':
+    ax[0].scatter(H2O_segment_of_interest.index[index_tau_H2O], H2O_segment_of_interest.iloc[index_tau_H2O])
 
+# d18O
+ax[1].plot(d18O_segment_of_interest)
+ax[1].set_ylabel('Norm. $\delta^{18}$O')
+ax[1].grid()
+if Variable_name == 'Delta_D_H':
+    ax[1].scatter(d18O_segment_of_interest.index[index_tau_d18O], d18O_segment_of_interest.iloc[index_tau_d18O])
 
-df_Picarro['ValveMask'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[3], label = 'd calibrated')
-ax[3].legend()
-ax[3].set_ylabel('Valve Mask []')
-ax[3].grid(which = 'both')
+# dD
+ax[2].plot(dD_segment_of_interest)
+ax[2].set_ylabel('Norm. $\delta$D')
+ax[2].grid()
+if Variable_name == 'Delta_D_H':
+    ax[2].scatter(dD_segment_of_interest.index[index_tau_dD], dD_segment_of_interest.iloc[index_tau_dD])
