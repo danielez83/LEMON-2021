@@ -19,15 +19,17 @@ from filter_picarro_data import filter_picarro_data
 
 #%% Configuration
 #iMet_filename               = '../iMet/44508/iMet-XQ2-44508_20210918.nc'
-Picarro_filename            = '../../Picarro_HIDS2254/2021/09/HIDS2254-20210918-DataLog_User.nc'
+Picarro_filename            = '../Picarro_HIDS2254/2021/09/HIDS2254-20210918-DataLog_User.nc'
 #Flight_table_filename       = '../Excel/Flights_Table.csv'
 #Flight_OI                   =  3#[2,3]#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
-Calibration_param_filename  = '../Standard_reg_param_STD_corr.pkl'
+Calibration_param_filename  = 'Standard_reg_param_STD_corr.pkl'
 #display                     = 'binned' #'raw', 'binned'
 #bin_mode                    = 'auto' #'auto', 'manual'
 #bins                        = np.arange(400, 20000, 400)
 calibrate_isotopes          = 'yes'
 calibrate_humidity          = 'yes'
+
+filter_data                 = 'no'
 
 start_date_str              = '2021-09-18 12:00:00'
 stop_date_str               = '2021-09-18 15:00:00'
@@ -93,9 +95,10 @@ df_Picarro = pd.DataFrame(data = {'H2O':H2O,
 # ----------------------------------------------------------------------------
 
 # Filter data
-df_Picarro['H2O'] = filter_picarro_data(df_Picarro['H2O'], 'H2O')
-df_Picarro['d18O'] = filter_picarro_data(df_Picarro['d18O'], 'd18O')
-df_Picarro['dD'] = filter_picarro_data(df_Picarro['dD'], 'dD')
+if filter_data == 'yes':
+    df_Picarro['H2O'] = filter_picarro_data(df_Picarro['H2O'], df_Picarro.index, 'H2O')
+    df_Picarro['d18O'] = filter_picarro_data(df_Picarro['d18O'], df_Picarro.index, 'd18O')
+    df_Picarro['dD'] = filter_picarro_data(df_Picarro['dD'], df_Picarro.index, 'dD')
 
 # Resample and center at 1 sec freq
 df_Picarro = df_Picarro.resample("1S").mean()

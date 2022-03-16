@@ -16,19 +16,19 @@ import netCDF4 as nc
 from hum_corr_fun import hum_corr_fun_v2 as hum_corr_fun
 
 #%% Configuration
-iMet_filename               = '../iMet/44508/iMet-XQ2-44508_20210923.nc'
-Picarro_filename            = '../Picarro_HIDS2254/2021/09/HIDS2254-20210923-DataLog_User.nc'
-Flight_table_filename       = '../Excel/Flights_Table.csv'
-Flight_OI                   =  16#[2,3]#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
-Calibration_param_filename  = 'Standard_reg_param_STD_corr.pkl'
+iMet_filename               = '../../iMet/44508/iMet-XQ2-44508_20210920.nc'
+Picarro_filename            = '../../Picarro_HIDS2254/2021/09/HIDS2254-20210920-DataLog_User (1).nc'
+Flight_table_filename       = '../../Excel/Flights_Table.csv'
+Flight_OI                   =  10#[2,3]#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
+Calibration_param_filename  = '../Standard_reg_param_STD_corr.pkl'
 display                     = 'raw' #'raw', 'binned'
 bin_mode                    = 'auto' #'auto', 'manual'
 bins                        = np.arange(400, 20000, 400)
 calibrate_isotopes          = 'yes'
 calibrate_humidity          = 'yes'
 
-start_date_str                   = '2021-09-23 9:15:00'
-stop_date_str                    = '2021-09-23 9:45:00'
+start_date_str                   = '2021-09-20 10:29:00'
+stop_date_str                    = '2021-09-20 10:36:00'
 
 #%% Pressure to alitude conversion
 # https://www.weather.gov/epz/wxcalc_pressurealtitude
@@ -157,8 +157,8 @@ else:
 
 fig, ax = plt.subplots(figsize = [10,10], dpi = 150)
 ax.scatter(df_iMet_subset['longitude'], df_iMet_subset['latitude'], c = Picarro_data_calibrated['dD'], cmap = 'jet')
-ax.set_ylim([44.53, 44.56])
-ax.set_xlim([4.32, 4.40])
+#ax.set_ylim([44.53, 44.56])
+#ax.set_xlim([4.32, 4.40])
 plt.savefig('demo.png', transparent=True)
 
 plt.scatter(df_iMet_subset['longitude'], df_iMet_subset['latitude'], c = Picarro_data_calibrated['dD'], cmap = 'jet')

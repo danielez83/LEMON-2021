@@ -12,9 +12,9 @@ import matplotlib.pyplot as plt
 import datetime
 import netCDF4 as nc
 #from scipy.stats import linregress
-
 from hum_corr_fun import hum_corr_fun_v2 as hum_corr_fun
 #from filter_picarro_data import filter_picarro_data_BW
+
 from filter_picarro_data import filter_picarro_data
 from filter_picarro_data import delay_picarro_data
 
@@ -22,18 +22,18 @@ from scipy import signal
 
 #%% Configuration
 #iMet_filename               = '../iMet/44508/iMet-XQ2-44508_20210918.nc'
-Picarro_filename            = '../../Picarro_HIDS2254/2021/09/HIDS2254-20210923-DataLog_User.nc'
-Flight_table_filename       = '../../Excel/Flights_Table.csv'
+Picarro_filename            = '../Picarro_HIDS2254/2021/09/HIDS2254-20210923-DataLog_User.nc'
+Flight_table_filename       = '../Excel/Flights_Table.csv'
 Flight_OI                   =  16#[2,3]#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
-Calibration_param_filename  = '../Standard_reg_param_STD_corr.pkl'
+Calibration_param_filename  = 'Standard_reg_param_STD_corr.pkl'
 display                     = 'raw' #'raw', 'binned'
-bin_mode                    = 'auto' #'auto', 'manual'
-bins                        = np.arange(400, 20000, 100)
+bin_mode                    = 'manual' #'auto', 'manual'
+bins                        = np.arange(400, 20000, 50)
 calibrate_isotopes          = 'yes'
 calibrate_humidity          = 'yes'
 
-apply_filter                = 'yes'
-apply_delay                 = 'yes'
+apply_filter                = 'no'
+apply_only_delay            = 'no'
 
 #%% Pressure to alitude conversion
 # https://www.weather.gov/epz/wxcalc_pressurealtitude
@@ -65,20 +65,19 @@ df_Picarro = pd.DataFrame(data = {'H2O':H2O,
                                   'CavityTemp':CavityTemp,
                                   'DasTemp':DasTemp,
                                   'WarmBoxTemp':WarmBoxTemp}, index = ncdate_pd_picarro)
-# Delay data
-if apply_delay == 'yes':
-    df_Picarro['H2O'] = delay_picarro_data(df_Picarro.index, df_Picarro['H2O'], 'H2O')
-    df_Picarro['d18O'] = delay_picarro_data(df_Picarro.index, df_Picarro['d18O'], 'd18O')
-    df_Picarro['dD'] = delay_picarro_data(df_Picarro.index, df_Picarro['dD'], 'dD')
-
 # Filter data
 if apply_filter == 'yes':
-    df_Picarro['H2O'] = filter_picarro_data(df_Picarro['H2O'], 'H2O')
-    df_Picarro['d18O'] = filter_picarro_data(df_Picarro['d18O'], 'd18O')
-    df_Picarro['dD'] = filter_picarro_data(df_Picarro['dD'], 'dD')
-    #df_Picarro['H2O'] = filter_picarro_data_BW(df_Picarro.index, df_Picarro['H2O'], 'H2O')
-    #df_Picarro['d18O'] = filter_picarro_data_BW(df_Picarro.index, df_Picarro['d18O'], 'd18O')
-    #df_Picarro['dD'] = filter_picarro_data_BW(df_Picarro.index, df_Picarro['dD'], 'dD')
+    df_Picarro['H2O'] = filter_picarro_data(df_Picarro['H2O'], df_Picarro.index, 'H2O')
+    df_Picarro['d18O'] = filter_picarro_data(df_Picarro['d18O'], df_Picarro.index, 'd18O')
+    df_Picarro['dD'] = filter_picarro_data(df_Picarro['dD'], df_Picarro.index, 'dD')
+
+# Apply only delay?
+if apply_only_delay == 'yes':
+    df_Picarro['H2O'] = delay_picarro_data(df_Picarro['H2O'], df_Picarro.index, 'H2O')
+    df_Picarro['d18O'] = delay_picarro_data(df_Picarro['d18O'], df_Picarro.index, 'd18O')
+    df_Picarro['dD'] = delay_picarro_data(df_Picarro['dD'], df_Picarro.index, 'dD')
+
+    
 # Resample and center at 1 sec freq
 df_Picarro = df_Picarro.resample("1S").mean()
 
@@ -172,7 +171,7 @@ if display == 'raw':
     ax[2].tick_params(axis='both', which='major', labelsize=14)
     ax[2].yaxis.set_ticklabels([])
     ax[2].set_xlabel('d-excess [‰]', fontsize=18)
-    ax[2].set_xlim([0, 20])
+    #ax[2].set_xlim([0, 20])
     
     buff_text = ("Flight n. %d  %s" % (Flight_OI, start_date.iloc[0]))
     fig.suptitle(buff_text)
