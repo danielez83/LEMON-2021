@@ -26,26 +26,26 @@ Picarro_filename                = '../Picarro_HIDS2254/2021/09/HIDS2254-20210918
 Calibration_param_filename      = 'Standard_reg_param_STD_corr.pkl'
 
 # Output files ----------------------------------------------------------------
-pkl_output_filename             = '../PKL final data/flight_04.pkl'
+pkl_output_filename             = '../PKL final data/flight_07_nofilt.pkl'
 save_pkl                        = True
-csv_output_filename             = '../CSV final data/flight_04.csv'
-save_csv                        = True
+csv_output_filename             = '../CSV final data/flight_07.csv'
+save_csv                        = False
 
 # Other Settings
-calibrate_isotopes              = False
-calibrate_humidity              = False
-filter_data                     = True
+calibrate_isotopes              = True
+calibrate_humidity              = True
+filter_data                     = False
 check_humidity                  = False
 display_plots                   = True
-start_date_str                  = '2021-09-18 05:13:00'
-stop_date_str                   = '2021-09-18 06:06:00'
+start_date_str                  = '2021-09-18 14:55:00'
+stop_date_str                   = '2021-09-18 16:05:00'
 variables_to_include_iMet       = ['LAT', 'LON', 'ALT',
                                    'TA', 'TD', 'UU', 'P']
 variables_to_include_Picarro    = ['H2O', 'd18O', 'dD'] # Picarro time will be included as the index
 
 #%% Metadata
-metadata = {"Flight ID"     : "F4",
-            "Other info"    : "Test"}
+metadata = {"Flight ID"     : "F4"}#,
+            #"Other info"    : "Test"}
 
 #%% Import PICARRO data
 file2read = nc.Dataset(Picarro_filename)
@@ -158,7 +158,7 @@ if check_humidity:
 start_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S')
 stop_date = datetime.datetime.strptime(stop_date_str, '%Y-%m-%d %H:%M:%S')
 
-df_Picarro_subset   = df_Picarro[(df_Picarro.index >= start_date) & (df_Picarro.index <= stop_date)]
+df_Picarro_subset   = df_Picarro_data_calibrated[(df_Picarro_data_calibrated.index >= start_date) & (df_Picarro_data_calibrated.index <= stop_date)]
 df_iMet_subset      = df_iMet[(df_iMet.index >= start_date) & (df_iMet.index <= stop_date)]
 
 #%% Create new dataframe
