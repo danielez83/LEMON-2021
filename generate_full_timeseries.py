@@ -21,30 +21,34 @@ from filter_picarro_data import delay_picarro_data
 
 #%% Configuration
 # Input files ----------------------------------------------------------------
-iMet_filename                   = '../iMet/44508/iMet-XQ2-44508_20210918.nc'
-Picarro_filename                = '../Picarro_HIDS2254/2021/09/HIDS2254-20210918-DataLog_User.nc'
+iMet_filename                   = '../iMet/44508/iMet-XQ2-44508_20210923.nc'
+Picarro_filename                = '../Picarro_HIDS2254/2021/09/HIDS2254-20210923-DataLog_User.nc'
 Calibration_param_filename      = 'Standard_reg_param_STD_corr.pkl'
 
 # Output files ----------------------------------------------------------------
-pkl_output_filename             = '../PKL final data/flight_07_nofilt.pkl'
+pkl_output_filename             = '../PKL final data/flight_16_nofilt.pkl'
 save_pkl                        = True
-csv_output_filename             = '../CSV final data/flight_07.csv'
+csv_output_filename             = '../CSV final data/flight_16.csv'
 save_csv                        = False
+
+# Date - time of interest
+start_date_str                  = '2021-09-23 8:05:00'
+stop_date_str                   = '2021-09-23 9:46:00'
 
 # Other Settings
 calibrate_isotopes              = True
 calibrate_humidity              = True
 filter_data                     = False
+
 check_humidity                  = False
 display_plots                   = True
-start_date_str                  = '2021-09-18 14:55:00'
-stop_date_str                   = '2021-09-18 16:05:00'
+
 variables_to_include_iMet       = ['LAT', 'LON', 'ALT',
                                    'TA', 'TD', 'UU', 'P']
 variables_to_include_Picarro    = ['H2O', 'd18O', 'dD'] # Picarro time will be included as the index
 
 #%% Metadata
-metadata = {"Flight ID"     : "F4"}#,
+metadata = {"Flight ID"     : 16}#,
             #"Other info"    : "Test"}
 
 #%% Import PICARRO data
@@ -74,7 +78,9 @@ df_Picarro = pd.DataFrame(data = {'H2O':H2O,
                                   'WarmBoxTemp':WarmBoxTemp,
                                   'ValveMask':ValveMask}, index = ncdate_pd_picarro)
 
-
+if ncdate_pd_picarro[0].day == 22:
+    df_Picarro = df_Picarro.drop(df_Picarro.index[0:1000])    
+    df_Picarro = df_Picarro.drop(df_Picarro.index[-1000])
 
 #%% Filter data
 if filter_data:

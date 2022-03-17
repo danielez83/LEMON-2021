@@ -16,7 +16,7 @@ import pickle
 from scipy import signal
 
 #%% Configuration
-data_filename            = '../PKL final data/flight_04.pkl'
+data_filename            = '../PKL final data/flight_16.pkl'
 
 
 display                     = 'raw' #'raw', 'binned'
@@ -39,8 +39,8 @@ if display == 'raw':
                   s = 16, marker = 'o', facecolors='none', 
                   c = flight_data.index, cmap = 'jet') #edgecolors='k')
                   
-    ax[0].set_xlabel('H$_2$O [ppm]', fontsize=18)
-    ax[0].set_ylabel('Altitude [m AMSL]', fontsize=18)
+    ax[0].set_xlabel('H$_2$O (ppm)', fontsize=18)
+    ax[0].set_ylabel('Altitude (m AMSL)', fontsize=18)
     ax[0].tick_params(axis='both', which='major', labelsize=14)
     ax[0].grid()
     
@@ -50,7 +50,7 @@ if display == 'raw':
     ax[1].grid()
     ax[1].tick_params(axis='both', which='major', labelsize=14)
     ax[1].yaxis.set_ticklabels([])
-    ax[1].set_xlabel('$\delta$D [‰]', fontsize=18)
+    ax[1].set_xlabel('$\delta$D (‰)', fontsize=18)
     
     ax[2].scatter(flight_data['dD']-8*flight_data['d18O'], flight_data['ALT'],
                   s = 16, marker = 'o', facecolors='none',
@@ -58,7 +58,7 @@ if display == 'raw':
     ax[2].grid()
     ax[2].tick_params(axis='both', which='major', labelsize=14)
     ax[2].yaxis.set_ticklabels([])
-    ax[2].set_xlabel('d-excess [‰]', fontsize=18)
+    ax[2].set_xlabel('d-excess (‰)', fontsize=18)
     #ax[2].set_xlim([0, 20])
     
     #buff_text = ("Flight n. %d  %s" % (Flight_OI, start_date.iloc[0]))
@@ -98,8 +98,8 @@ elif display == 'binned':
     ax[0].plot(H2O_means+H2O_stds, altitude_center, linestyle = '--', linewidth=1, color = [0,0,0])
     ax[0].plot(H2O_means-H2O_stds, altitude_center, linestyle = '--', linewidth=1, color = [0,0,0])
     ax[0].fill_betweenx(altitude_center, H2O_means-H2O_stds, H2O_means+H2O_stds, color = [0,0,0], alpha = .3 )
-    ax[0].set_xlabel('H$_2$O [ppm]', fontsize=18)
-    ax[0].set_ylabel('Altitude [m AMSL]', fontsize=18)
+    ax[0].set_xlabel('H$_2$O (ppm)', fontsize=18)
+    ax[0].set_ylabel('Altitude (m AMSL)', fontsize=18)
     ax[0].tick_params(axis='both', which='major', labelsize=14)
     ax[0].grid()
 
@@ -119,7 +119,7 @@ elif display == 'binned':
     ax[1].grid()
     ax[1].tick_params(axis='both', which='major', labelsize=14)
     ax[1].yaxis.set_ticklabels([])
-    ax[1].set_xlabel('$\delta$D [‰]', fontsize=18)
+    ax[1].set_xlabel('$\delta$D (‰)', fontsize=18)
     
     ax[2].plot(d_means, altitude_center, linewidth=1, color = [0,0,1])
     ax[2].plot(d_means+d_stds, altitude_center, linestyle = '--', linewidth=1, color = [0,0,1])
@@ -128,7 +128,7 @@ elif display == 'binned':
     ax[2].grid()
     ax[2].tick_params(axis='both', which='major', labelsize=14)
     ax[2].yaxis.set_ticklabels([])
-    ax[2].set_xlabel('d-excess [‰]', fontsize=18)
+    ax[2].set_xlabel('d-excess (‰)', fontsize=18)
     #ax[2].set_xlim([-50, 50])
     
     #buff_text = ("Flight n. %d  %s" % (Flight_OI, start_date.iloc[0]))
