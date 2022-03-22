@@ -27,12 +27,12 @@ Calibration_param_filename      = 'Standard_reg_param_STD_corr.pkl'
 
 # Output files ----------------------------------------------------------------
 pkl_output_filename             = '../PKL final data/flight_16_UNCAL.pkl'
-save_pkl                        = True
+save_pkl                        = False
 csv_output_filename             = '../CSV final data/flight_16_UNCAL.csv'
-save_csv                        = True
+save_csv                        = False
 
 # Date - time of interest
-start_date_str                  = '2021-09-23 8:06:00'
+start_date_str                  = '2021-09-23 8:00:00'
 stop_date_str                   = '2021-09-23 9:46:00'
 
 # Other Settings
