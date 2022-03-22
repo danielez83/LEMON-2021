@@ -30,7 +30,7 @@ Calibration_param_filename      = 'Standard_reg_param_STD_corr.pkl'
 
 # Output files ----------------------------------------------------------------
 pkl_output_filename             = '../PKL final data/flight_03_nofilt.pkl'
-save_pkl                        = True
+save_pkl                        = False
 csv_output_filename             = '../CSV final data/flight_03.csv'
 save_csv                        = False
 

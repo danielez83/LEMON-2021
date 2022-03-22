@@ -16,7 +16,7 @@ import pickle
 from scipy import signal
 
 #%% Configuration
-data_filename            = '../PKL final data/flight_16.pkl'
+data_filename            = '../PKL final data/flight_03.pkl'
 
 #%% Load data
 with open(data_filename, 'rb') as f:
@@ -30,7 +30,7 @@ ax = fig.add_subplot(111, projection='3d')
 
 ax.scatter(flight_data['LON'], flight_data['LAT'], flight_data['ALT'],
               s = 16, marker = 'o', edgecolors='none', 
-              c = flight_data['TA'], cmap = 'jet') #edgecolors='k')
+              c = flight_data.index, cmap = 'jet') #edgecolors='k')
               
 #ax.set_xlabel('H$_2$O [ppm]', fontsize=18)
 #ax.set_ylabel('Altitude [m AMSL]', fontsize=18)

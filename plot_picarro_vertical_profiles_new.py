@@ -16,7 +16,7 @@ import pickle
 from scipy import signal
 
 #%% Configuration
-data_filename            = '../PKL final data/flight_03_nofilt.pkl'
+data_filename            = '../PKL final data/flight_03.pkl'
 
 
 display                     = 'raw' #'raw', 'binned'

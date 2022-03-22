@@ -26,18 +26,18 @@ Picarro_filename                = '../Picarro_HIDS2254/2021/09/HIDS2254-20210923
 Calibration_param_filename      = 'Standard_reg_param_STD_corr.pkl'
 
 # Output files ----------------------------------------------------------------
-pkl_output_filename             = '../PKL final data/flight_16_nofilt.pkl'
+pkl_output_filename             = '../PKL final data/flight_16_UNCAL.pkl'
 save_pkl                        = True
-csv_output_filename             = '../CSV final data/flight_16.csv'
-save_csv                        = False
+csv_output_filename             = '../CSV final data/flight_16_UNCAL.csv'
+save_csv                        = True
 
 # Date - time of interest
-start_date_str                  = '2021-09-23 8:05:00'
+start_date_str                  = '2021-09-23 8:06:00'
 stop_date_str                   = '2021-09-23 9:46:00'
 
 # Other Settings
-calibrate_isotopes              = True
-calibrate_humidity              = True
+calibrate_isotopes              = False
+calibrate_humidity              = False
 filter_data                     = False
 
 check_humidity                  = False
