@@ -19,7 +19,7 @@ import pickle
 from scipy import signal
 
 #%% Configuration
-data_filename                   = '../PKL final data/flight_07.pkl'
+data_filename                   = '../PKL final data/flight_10.pkl'
 
 var_of_interest                 = 'dD'
 
@@ -28,20 +28,26 @@ Lanas_Airfield_Pos              = [44.541083, 4.371550]
 Lanas_Airfield_Altitude         = 275 # m AMSL
 
 # Flight 03 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-start_date_str                  = '2021-09-17 15:46:00'
-stop_date_str                   = '2021-09-17 16:26:00'
+#start_date_str                  = '2021-09-17 15:46:00'
+#stop_date_str                   = '2021-09-17 16:26:00'
 # Flight 04 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 start_date_str                  = '2021-09-18 05:20:00'
 stop_date_str                   = '2021-09-18 06:10:00'
 # Flight 05 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-start_date_str                  = '2021-09-18 08:15:00'
-stop_date_str                   = '2021-09-18 09:30:00'
+# start_date_str                  = '2021-09-18 08:15:00'
+# stop_date_str                   = '2021-09-18 09:30:00'
 # Flight 06 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-start_date_str                  = '2021-09-18 12:20:00'
-stop_date_str                   = '2021-09-18 13:05:00'
+# start_date_str                  = '2021-09-18 12:20:00'
+# stop_date_str                   = '2021-09-18 13:05:00'
 # Flight 07 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-start_date_str                  = '2021-09-18 15:00:00'
-stop_date_str                   = '2021-09-18 16:10:00'
+#start_date_str                  = '2021-09-18 15:00:00'
+#stop_date_str                   = '2021-09-18 16:10:00'
+# Flight 08 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+start_date_str                  = '2021-09-19 08:00:00'
+stop_date_str                   = '2021-09-19 09:15:00'
+# Flight 10 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+start_date_str                  = '2021-09-20 09:40:00'
+stop_date_str                   = '2021-09-20 10:00:00'
 
 
 #%% Load data
@@ -72,6 +78,8 @@ UTMx, UTMy = myProj(flight_data['LON'].to_numpy(), flight_data['LAT'].to_numpy()
 flight_data['UTMx'] = UTMx
 flight_data['UTMy'] = UTMy
 
+Lanas_Airfield_Pos_UTMx,Lanas_Airfield_Pos_UTMy =  myProj(Lanas_Airfield_Pos[1], Lanas_Airfield_Pos[0])
+
 #%% Subset data by time
 start_date = datetime.datetime.strptime(start_date_str, '%Y-%m-%d %H:%M:%S')
 stop_date = datetime.datetime.strptime(stop_date_str, '%Y-%m-%d %H:%M:%S')
@@ -87,7 +95,7 @@ good_indexes = random.sample(range(0, L), n_samples)
 
 #%% Detrend data and plot trendline
 
-XVar = flight_data['ALT'].to_numpy()
+XVar = flight_data['TA'].to_numpy()
 YVar = flight_data[var_of_interest].to_numpy()
 
 #from lmfit.models import ExponentialModel
@@ -120,13 +128,13 @@ angles = [np.deg2rad(90), np.deg2rad(90), np.deg2rad(90)]
 main_axes = gs.rotated_main_axes(dim, angles)
 axis1, axis2, axis3 = main_axes
 
-pos = (flight_data['UTMx'].to_numpy(), 
-       flight_data['UTMy'].to_numpy(), 
-       flight_data['ALT'].to_numpy())
-field = flight_data[var_of_interest].to_numpy()
-#field = residuals
+pos = (flight_data['UTMx'].to_numpy() - flight_data['UTMx'].mean(), 
+       flight_data['UTMy'].to_numpy() - flight_data['UTMy'].mean(), 
+       flight_data['ALT'].to_numpy() - flight_data['ALT'].mean())
+#field = flight_data[var_of_interest].to_numpy()
+field = residuals
 
-bins = np.arange(0, 2000, 200)
+bins = np.arange(0, 3000, 200)
 bin_center, dir_vario, counts = gs.vario_estimate(
     pos,
     field,
@@ -139,16 +147,25 @@ bin_center, dir_vario, counts = gs.vario_estimate(
     return_counts=True,
 )
 
-fig, ax = plt.subplots(dpi = 300)
-ax.scatter(bin_center, dir_vario[2], label="0. axis")
+fig, ax = plt.subplots(nrows= 3, sharex=True)
+ax[0].scatter(bin_center, dir_vario[0], label="0. axis")
+ax[1].scatter(bin_center, dir_vario[1], label="1. axis")
+ax[2].scatter(bin_center, dir_vario[2], label="2. axis")
+plt.tight_layout()
 #ax.set_ylim([0, 1])
 #%% Plot  of single data points
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-ax.scatter(flight_data['LON'][good_indexes], flight_data['LAT'][good_indexes], flight_data['ALT'][good_indexes],
-              s = 16, marker = 'o', edgecolors='none', 
-              c = flight_data.index[good_indexes], cmap = 'jet') #edgecolors='k')
+ax.scatter(flight_data['UTMx'][good_indexes] - flight_data['UTMx'][good_indexes].mean(), 
+           flight_data['UTMy'][good_indexes] - flight_data['UTMy'][good_indexes].mean(), 
+           flight_data['ALT'][good_indexes] - flight_data['ALT'][good_indexes].mean(),
+           s = 16, marker = 'o', edgecolors='none', 
+           c = flight_data.index[good_indexes], cmap = 'jet') #edgecolors='k')
+
+ax.plot([0, axis1[0]], [0, axis1[1]], [0, axis1[2]*1000], label="0.")
+ax.plot([0, axis2[0]], [0, axis2[1]*1000], [0, axis2[2]], label="1.")
+ax.plot([0, axis3[0]*1000], [0, axis3[1]], [0, axis3[2]], label="2.")
               
 #ax.set_xlabel('H$_2$O [ppm]', fontsize=18)
 #ax.set_ylabel('Altitude [m AMSL]', fontsize=18)

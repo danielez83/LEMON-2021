@@ -31,8 +31,8 @@ calibrate_humidity          = 'yes'
 
 filter_data                 = 'no'
 
-start_date_str              = '2021-09-18 12:00:00'
-stop_date_str               = '2021-09-18 15:00:00'
+start_date_str              = '2021-09-18 14:00:00'
+stop_date_str               = '2021-09-18 14:20:00'
 
 #%% Highlight section --------------------------------------------------------
 SOI = 0

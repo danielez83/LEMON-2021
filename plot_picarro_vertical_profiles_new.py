@@ -16,14 +16,13 @@ import pickle
 from scipy import signal
 
 #%% Configuration
-data_filename            = '../PKL final data/flight_03.pkl'
+data_filename            = '../PKL final data/flight_04.pkl'
 
 
 display                     = 'raw' #'raw', 'binned'
 bin_mode                    = 'manual' #'auto', 'manual'
 bins                        = np.arange(400, 20000, 50)
-calibrate_isotopes          = 'yes'
-calibrate_humidity          = 'yes'
+
 
 #%% Load data
 with open(data_filename, 'rb') as f:

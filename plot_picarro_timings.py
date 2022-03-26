@@ -28,7 +28,7 @@ from filter_picarro_data import delay_picarro_data
 filename_step_data              = '../Excel/step_change_tests.csv'
 filename_step_timings           = '../Excel/step_change_timings.csv'
 
-filename_response_function      = 'response_functions_15032022_fullf.pkl'
+filename_response_function      = 'response_functions_15032022_test.pkl'
 
 # Colors
 color_H2O   = 'k'
@@ -322,7 +322,7 @@ for axis in ax:
     axis.set_xscale('log')
     axis.set_xlim([5e-3, 2])
     axis.set_ylabel('Amplitude', size=18)
-    axis.legend(fontsize = 18)
+    axis.legend(fontsize = 12)
     axis.grid()
     axis.tick_params(axis='both', which='major', labelsize=18)
     
