@@ -35,7 +35,7 @@ csv_output_filename             = '../CSV final data/flight_03.csv'
 save_csv                        = False
 
 # Date - time of interest
-start_date_str                  = '2021-09-17 15:28:00'
+start_date_str                  = '2021-09-17 16:15:00'
 stop_date_str                   = '2021-09-17 16:45:00'
 
 # Other Settings

@@ -33,7 +33,7 @@ bins                        = np.arange(400, 20000, 50)
 with open(data_filename, 'rb') as f:
     flight_data, metadata = pickle.load(f)
 
-#flight_data = flight_data[flight_data['ALT'] < 1000]
+flight_data = flight_data[flight_data['ALT'] < 1000]
     
 #%% Convert Lat Lon in UTM (meters)
 # https://ocefpaf.github.io/python4oceanographers/blog/2013/12/16/utm/
@@ -45,6 +45,9 @@ flight_data['UTMy'] = UTMy
 pos = np.array([flight_data['UTMx'].to_numpy() - flight_data['UTMx'].mean(),
                 flight_data['UTMy'].to_numpy() - flight_data['UTMy'].mean(),
                 flight_data['ALT'].to_numpy() - flight_data['ALT'].mean(),])
+
+pos = np.array([flight_data['LON'].to_numpy() - flight_data['LON'].mean(),
+                flight_data['LAT'].to_numpy() - flight_data['LAT'].mean()])
 pos = pos.T
 data = flight_data['dD'].to_numpy()
 
@@ -157,4 +160,6 @@ def MoranI(pos, field):
 #%%
 #w=pysal.lib.weights.Voronoi(pos)
 #pysal_MoranI = pysal.explore.esda.Moran(data, w)
+dist_matrix = distance_matrix(pos)
+
 print(MoranI(pos, data))

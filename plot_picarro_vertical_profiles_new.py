@@ -16,10 +16,10 @@ import pickle
 from scipy import signal
 
 #%% Configuration
-data_filename            = '../PKL final data/flight_04.pkl'
+data_filename            = '../PKL final data/flight_03.pkl'
 
 
-display                     = 'raw' #'raw', 'binned'
+display                     = 'binned' #'raw', 'binned'
 bin_mode                    = 'manual' #'auto', 'manual'
 bins                        = np.arange(400, 20000, 50)
 
@@ -28,11 +28,11 @@ bins                        = np.arange(400, 20000, 50)
 with open(data_filename, 'rb') as f:
     flight_data, metadata = pickle.load(f)
 
-
+#%% Generate figure
+fig, ax = plt.subplots(ncols=3, figsize=(10,15))
 
 #%% Visualization of single data points
 if display == 'raw':
-    fig, ax = plt.subplots(ncols=3, figsize=(10,15))
     plt.subplots_adjust(wspace = .05) 
     ax[0].scatter(flight_data['H2O'], flight_data['ALT'],
                   s = 16, marker = 'o', facecolors='none', 
@@ -91,7 +91,6 @@ elif display == 'binned':
         
     # Plot
     altitude_center = bins[:-1] + np.diff(bins)/2
-    fig, ax = plt.subplots(ncols=3, figsize=(10,15))
     plt.subplots_adjust(wspace = .05) 
     ax[0].plot(H2O_means, altitude_center, linewidth=1, color = [0,0,0])
     ax[0].plot(H2O_means+H2O_stds, altitude_center, linestyle = '--', linewidth=1, color = [0,0,0])
