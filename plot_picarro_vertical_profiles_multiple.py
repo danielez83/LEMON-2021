@@ -20,14 +20,14 @@ data_filename            = ['../PKL final data/flight_04.pkl',
                             '../PKL final data/flight_05.pkl',
                             '../PKL final data/flight_06.pkl',
                             '../PKL final data/flight_07.pkl',
-                            #'../PKL final data/flight_08.pkl',
-                            #'../PKL final data/flight_09.pkl',
-                            #'../PKL final data/flight_10.pkl',
-                            #'../PKL final data/flight_11.pkl',
-                            #'../PKL final data/flight_12.pkl',
-                            #'../PKL final data/flight_14.pkl',
-                            #'../PKL final data/flight_15.pkl',
-                            #'../PKL final data/flight_16.pkl',
+                            '../PKL final data/flight_08.pkl',
+                            '../PKL final data/flight_09.pkl',
+                            '../PKL final data/flight_10.pkl',
+                            '../PKL final data/flight_11.pkl',
+                            '../PKL final data/flight_12.pkl',
+                            '../PKL final data/flight_14.pkl',
+                            '../PKL final data/flight_15.pkl',
+                            '../PKL final data/flight_16.pkl',
                             ]
 
 
@@ -37,7 +37,7 @@ bins                        = np.arange(400, 3500, 100)
 label_profile               = True
 
 show_PBLH                   = True
-PBLH_values                 = [859.3365478515625, 1215.645751953125]
+PBLH_values                 = [1503.4145564912014, 1949.820674343401]
 
 
 #%% Load data
