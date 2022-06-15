@@ -21,21 +21,23 @@ from filter_picarro_data import delay_picarro_data
 
 #%% Configuration
 # Input files ----------------------------------------------------------------
-iMet_filename                   = '../iMet/44508/iMet-XQ2-44508_20210923.nc'
-Picarro_filename                = '../Picarro_HIDS2254/2021/09/HIDS2254-20210923-DataLog_User.nc'
+iMet_filename                   = '../iMet/44508/iMet-XQ2-44508_20210918.nc'
+#Picarro_filename                = '../Picarro_HIDS2254/2021/09/HIDS2254-20210923-DataLog_User.nc' # Raw Data
+Picarro_filename                = '../Picarro_HIDS2254/LEMON2021-HIDS2254_20210917_20211102/calibrated/2021/09/FARLAB_HIDS2254_cal_V1_20210918.nc'  # FaVaCal
 Calibration_param_filename      = 'Standard_reg_param_STD_corr.pkl'
 
 # Output files ----------------------------------------------------------------
-pkl_output_filename             = '../PKL final data/flight_16_UNCAL.pkl'
-save_pkl                        = False
-csv_output_filename             = '../CSV final data/flight_16_UNCAL.csv'
-save_csv                        = False
+pkl_output_filename             = '../PKL final data/flight_04_nofilt_V1.pkl'
+save_pkl                        = True
+csv_output_filename             = '../CSV final data/flight_04_nofilt_V1.csv'
+save_csv                        = True
 
 # Date - time of interest
-start_date_str                  = '2021-09-23 8:00:00'
-stop_date_str                   = '2021-09-23 9:46:00'
+start_date_str                  = '2021-09-18 05:12:00'
+stop_date_str                   = '2021-09-18 06:06:00'
 
 # Other Settings
+FaVaCal                         = True # Import FaVaCal calibrated data
 calibrate_isotopes              = False
 calibrate_humidity              = False
 filter_data                     = False
@@ -68,15 +70,26 @@ ncdate_picarro = nc.num2date(time, 'days since 1970-01-01 00:00:00.0',
 ncdate_pd_picarro = pd.to_datetime(ncdate_picarro)
 
 #%% Save data as pandas df
-df_Picarro = pd.DataFrame(data = {'H2O':H2O,
-                                  'd18O':Delta_18_16,
-                                  'dD': Delta_D_H,
-                                  'AmbientPressure':AmbientPressure*1.3332236842,   #Converted to hPa
-                                  'CavityPressure': CavityPressure,
-                                  'CavityTemp':CavityTemp,
-                                  'DasTemp':DasTemp,
-                                  'WarmBoxTemp':WarmBoxTemp,
-                                  'ValveMask':ValveMask}, index = ncdate_pd_picarro)
+if FaVaCal:
+    df_Picarro = pd.DataFrame(data = {'H2O':q,
+                                      'd18O':delta_18O,
+                                      'dD': delta_D,
+                                      'AmbientPressure':p,
+                                      'CavityPressure': pc,
+                                      'CavityTemp':Tc,
+                                      'DasTemp':Tdas,
+                                      'WarmBoxTemp':Twb,
+                                      'ValveMask':vmask}, index = ncdate_pd_picarro)
+else:
+    df_Picarro = pd.DataFrame(data = {'H2O':H2O,
+                                      'd18O':Delta_18_16,
+                                      'dD': Delta_D_H,
+                                      'AmbientPressure':AmbientPressure*1.3332236842,   #Converted to hPa
+                                      'CavityPressure': CavityPressure,
+                                      'CavityTemp':CavityTemp,
+                                      'DasTemp':DasTemp,
+                                      'WarmBoxTemp':WarmBoxTemp,
+                                      'ValveMask':ValveMask}, index = ncdate_pd_picarro)
 
 if ncdate_pd_picarro[0].day == 22:
     df_Picarro = df_Picarro.drop(df_Picarro.index[0:1000])    
@@ -84,6 +97,10 @@ if ncdate_pd_picarro[0].day == 22:
 
 #%% Filter data
 if filter_data:
+    # Adjust number of observations to even number
+    if np.size(df_Picarro.index) % 2:
+        df_Picarro.drop(labels = df_Picarro.index[-1], axis = 0, inplace=True)
+        
     df_Picarro['H2O'] = filter_picarro_data(df_Picarro['H2O'], df_Picarro.index, 'H2O')
     df_Picarro['d18O'] = filter_picarro_data(df_Picarro['d18O'], df_Picarro.index, 'd18O')
     df_Picarro['dD'] = filter_picarro_data(df_Picarro['dD'], df_Picarro.index, 'dD')

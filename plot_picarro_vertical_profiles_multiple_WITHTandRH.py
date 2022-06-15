@@ -17,14 +17,12 @@ from scipy import signal
 
 #%% Configuration
 data_filename            = [#'../PKL final data/flight_04.pkl',
-                            #'../PKL final data/flight_04_V1.pkl',
-                            '../PKL final data/flight_04_nofilt_V1.pkl',
                             #'../PKL final data/flight_05.pkl',
                             #'../PKL final data/flight_06.pkl',
                             #'../PKL final data/flight_07.pkl',
                             #'../PKL final data/flight_08.pkl',
                             #'../PKL final data/flight_09.pkl',
-                            #'../PKL final data/flight_10.pkl',
+                            '../PKL final data/flight_10.pkl',
                             #'../PKL final data/flight_11.pkl',
                             #'../PKL final data/flight_12.pkl',
                             #'../PKL final data/flight_14.pkl',
@@ -33,14 +31,14 @@ data_filename            = [#'../PKL final data/flight_04.pkl',
                             ]
 
 
-display                     = 'raw' #'raw', 'binned'
+display                     = 'binned' #'raw', 'binned'
 bin_mode                    = 'manual' #'auto', 'manual'
 bins                        = np.arange(400, 3500, 100)
 label_profile               = False
 
 show_PBLH                   = True
 PBLH_values                 = [1503.4145564912014, 1949.820674343401] # Average
-PBLH_values                 = [981.7148488141952, 1002.3649894834459] # For flight 07, BLH at 15 and at 16
+#PBLH_values                 = [981.7148488141952, 1002.3649894834459] # For flight 07, BLH at 15 and at 16
 PBLH_values                 = [1553.746437814716, 1562.5964981015377] # For flight 10, BLH at 10 and 11
 
 #%% Load data
@@ -108,7 +106,11 @@ elif display == 'binned':
         dD_means    = np.repeat(np.nan, len(bins) - 1)
         dD_stds     = np.repeat(np.nan, len(bins) - 1)
         d_means     = np.repeat(np.nan, len(bins) - 1)
-        d_stds      = np.repeat(np.nan, len(bins) - 1)       
+        d_stds      = np.repeat(np.nan, len(bins) - 1)    
+        T_means   = np.repeat(np.nan, len(bins) - 1)
+        T_stds    = np.repeat(np.nan, len(bins) - 1)      
+        RH_means   = np.repeat(np.nan, len(bins) - 1)
+        RH_stds    = np.repeat(np.nan, len(bins) - 1)  
         for curr_bin, next_bin, idx in zip(bins[:-1], bins[1:], range(0, len(altitudes))):
             strbuff = "H2O_means[idx] = %s['H2O'][(altitudes > curr_bin) & (altitudes < next_bin)].mean()" % s
             exec(strbuff)
@@ -122,7 +124,15 @@ elif display == 'binned':
             exec(strbuff)
             strbuff = "dD_stds[idx] = %s['dD'][(altitudes > curr_bin) & (altitudes < next_bin)].std()" % s
             exec(strbuff)
-            
+            strbuff = "T_means[idx] = %s['TA'][(altitudes > curr_bin) & (altitudes < next_bin)].mean()" % s
+            exec(strbuff)
+            strbuff = "T_stds[idx] = %s['TA'][(altitudes > curr_bin) & (altitudes < next_bin)].std()" % s
+            exec(strbuff)
+            strbuff = "RH_means[idx] = %s['UU'][(altitudes > curr_bin) & (altitudes < next_bin)].mean()" % s
+            exec(strbuff)
+            strbuff = "RH_stds[idx] = %s['UU'][(altitudes > curr_bin) & (altitudes < next_bin)].std()" % s
+            exec(strbuff)
+
             d_means[idx] = dD_means[idx] - 8 * d18O_means[idx]
             d_stds[idx] = np.sqrt(dD_stds[idx]**2 + 8*d18O_stds[idx]**2) #https://acp.copernicus.org/preprints/acp-2018-1313/acp-2018-1313.pdf
         # Plot
@@ -136,13 +146,21 @@ elif display == 'binned':
         ax[0].set_ylabel('Altitude (m AMSL)', fontsize=32)
         ax[0].tick_params(axis='both', which='major', labelsize=36)
 
-        ax[1].plot(d18O_means, altitude_center, linewidth=1, color = [1,0,0])
-        ax[1].plot(d18O_means+d18O_stds, altitude_center, linestyle = '--', linewidth=1, color = [1,0,0], alpha = .1)
-        ax[1].plot(d18O_means-d18O_stds, altitude_center, linestyle = '--', linewidth=1, color = [1,0,0], alpha = .1)
-        ax[1].fill_betweenx(altitude_center, d18O_means-d18O_stds, d18O_means+d18O_stds, color = [1,0,0], alpha = .1 )
+        # ax[1].plot(d18O_means, altitude_center, linewidth=1, color = [1,0,0])
+        # ax[1].plot(d18O_means+d18O_stds, altitude_center, linestyle = '--', linewidth=1, color = [1,0,0], alpha = .1)
+        # ax[1].plot(d18O_means-d18O_stds, altitude_center, linestyle = '--', linewidth=1, color = [1,0,0], alpha = .1)
+        # ax[1].fill_betweenx(altitude_center, d18O_means-d18O_stds, d18O_means+d18O_stds, color = [1,0,0], alpha = .1 )
+        # ax[1].tick_params(axis='both', which='major', labelsize=36)
+        # #ax[1].yaxis.set_ticklabels([])
+        # ax[1].set_xlabel('$\delta^{18}$O (‰)', fontsize=32)
+        ax[1].plot(T_means, altitude_center, linewidth=1, color = [1,0,0])
+        ax[1].plot(T_means+T_stds, altitude_center, linestyle = '--', linewidth=1, color = [1,0,0], alpha = .1)
+        ax[1].plot(T_means-T_stds, altitude_center, linestyle = '--', linewidth=1, color = [1,0,0], alpha = .1)
+        ax[1].fill_betweenx(altitude_center, T_means-T_stds, T_means+T_stds, color = [1,0,0], alpha = .1 )
         ax[1].tick_params(axis='both', which='major', labelsize=36)
         #ax[1].yaxis.set_ticklabels([])
-        ax[1].set_xlabel('$\delta^{18}$O (‰)', fontsize=32)
+        ax[1].set_xlabel('T (˚C)', fontsize=32)
+  
     
         ax[2].plot(dD_means, altitude_center, linewidth=1, color = [1,0,1])
         ax[2].plot(dD_means+dD_stds, altitude_center, linestyle = '--', linewidth=1, color = [1,0,1], alpha = .1)
@@ -183,9 +201,11 @@ elif display == 'binned':
                        [PBLH_values[0], PBLH_values[0]], 'k--')
             ax[0].plot([H2O_means[~np.isnan(H2O_means)].min(), H2O_means[~np.isnan(H2O_means)].max()],
                        [PBLH_values[1], PBLH_values[1]], 'k--')
-            ax[1].plot([d18O_means[~np.isnan(d18O_means)].min(), d18O_means[~np.isnan(d18O_means)].max()],
+            ax[1].plot([T_means[~np.isnan(T_means)].min(), T_means[~np.isnan(T_means)].max()],
                        [PBLH_values[0], PBLH_values[0]], 'k--')
-            ax[1].plot([d18O_means[~np.isnan(d18O_means)].min(), d18O_means[~np.isnan(d18O_means)].max()],
+            #ax[1].plot([d18O_means[~np.isnan(d18O_means)].min(), d18O_means[~np.isnan(d18O_means)].max()],
+            #           [PBLH_values[1], PBLH_values[1]], 'k--')
+            ax[1].plot([T_means[~np.isnan(T_means)].min(), T_means[~np.isnan(T_means)].max()],
                        [PBLH_values[1], PBLH_values[1]], 'k--')
             ax[2].plot([dD_means[~np.isnan(dD_means)].min(), dD_means[~np.isnan(dD_means)].max()],
                        [PBLH_values[0], PBLH_values[0]], 'k--')
@@ -198,13 +218,19 @@ elif display == 'binned':
             
     #fig.tight_layout()
     #fig.subplots_adjust(top=0.95)
-    #ax[1].set_xticks(np.arange(-35, -10, 5)) # OK flight 7
-    #ax[3].set_xticks(np.arange(-10, 55, 10)) # OK flight 7
-    ax[1].set_xticks(np.arange(-17, -15.5, .5)) # OK flight 10
-    ax[2].set_xticks(np.arange(-122, -112, 3)) # OK flight 10
-    ax[3].set_xticks(np.arange(5, 26, 5)) # OK flight 10
-    ax[3].set_xlim([0,25]) # OK flight 10
-    
+    # ax[0].set_xticks(np.arange(1000, 15000, 4000)) # OK flight 7
+    # ax[1].set_xticks(np.arange(5, 25, 5)) # OK flight 7
+    # ax[3].set_xticks(np.arange(5, 30, 5)) # OK flight 7
+    # ax[3].set_xlim([0,30]) # OK flight 7
+    ax[0].set_xlim([10000, 11500]) # OK flight 10
+    ax[0].set_xticks(np.arange(10100, 11500, 600)) # OK flight 10
+    ax[1].set_xlim([7,18])
+    ax[1].set_xticks(np.arange(8, 18, 3)) # OK flight 10
+    ax[2].set_xlim([-126,-113])
+    ax[2].set_xticks(np.arange(-125, -115, 3)) # OK flight 10
+    ax[3].set_xticks(np.arange(5, 30, 5)) # OK flight 10
+    ax[3].set_xlim([5,20]) # OK flight 10
+        
     # Common graphical settings
     for axis in ax:
         axis.tick_params(axis='both', which='major', labelsize=24)

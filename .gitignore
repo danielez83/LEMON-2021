@@ -7,6 +7,10 @@ Icon
 #Datafile
 *.pkl
 
+#Images
+*.png
+*.svg
+
 # Personal routines and functions
 FARLAB_standards.py
 

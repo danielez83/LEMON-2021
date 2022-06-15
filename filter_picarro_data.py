@@ -52,10 +52,13 @@ def filter_picarro_data(raw_data_in, time_in, variable):
         delay = round(delay_dD/t_unit)
         P_OI = P_dD_reponse
         f_OI = f_dD
-    
+
+    # interpolate nans 
+    raw_data_in.interpolate(inplace = True) # Required because FaVaCal returns NaNs
     # Convert to numpy arrays
     y = raw_data_in.to_numpy()
     t = time_in.to_numpy()
+
     
     # Delay data
     y = np.roll(y, delay)
@@ -67,7 +70,7 @@ def filter_picarro_data(raw_data_in, time_in, variable):
     # Calculate vector of frequencies for fft
     xf = np.fft.rfftfreq(len(y), 1 / fs)
     # Calculate a dummy fft for offset
-    y_dummy = np.cumsum(np.fft.irfft(yf))
+    y_dummy = np.nancumsum(np.fft.irfft(yf))
     offset = y_dummy - y
     # Interpolate impulse response function
     yh = np.interp(xf, f_OI, P_OI, left=1+0*1j, right = 0*1j)          

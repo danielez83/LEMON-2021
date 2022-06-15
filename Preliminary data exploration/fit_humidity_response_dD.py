@@ -19,8 +19,8 @@ from lmfit.models import ExpressionModel
 
 #%% Fit GLW d18O
 
-GLW20210919 = pd.read_pickle('GLW_20210919_extended.pkl')
-GLW20210920 = pd.read_pickle('GLW_20210920_extended.pkl')
+GLW20210919 = pd.read_pickle('../GLW_20210919_extended.pkl')
+GLW20210920 = pd.read_pickle('../GLW_20210920_extended.pkl')
 
 temp_df = pd.concat((GLW20210919, GLW20210920))
 temp_df = temp_df.sort_values(by = ['H2O'])
@@ -70,7 +70,7 @@ print("Mean ± 1std dD observed: %.2f±%.2f" % (
       np.std(temp_df['dD_mean'], ddof=1)))
 print('--------------------------------')
 #%%
-FIN20210921 = pd.read_pickle('FINSE_20210921_extended.pkl')
+FIN20210921 = pd.read_pickle('../FINSE_20210921_extended.pkl')
 temp_df = FIN20210921.sort_values(by = ['H2O'])
 
 XVar = temp_df['H2O'].to_numpy()
@@ -117,7 +117,7 @@ print("Mean ± 1std dD observed: %.2f±%.2f" % (
 print('--------------------------------')
 
 #%% Fit BERMUDA d18O
-BER20210919 = pd.read_pickle('BER_20210919_extended.pkl')
+BER20210919 = pd.read_pickle('../BER_20210919_extended.pkl')
 # Remove high H2O point
 BER20210919.drop(labels = 10, inplace= True)
 temp_df = BER20210919.sort_values(by = ['H2O'])
@@ -167,7 +167,7 @@ print("Mean ± 1std dD observed: %.2f±%.2f" % (
 print('--------------------------------')
 
 #%% Single Plot with all standards
-fig, ax = plt.subplots(figsize=(15,10))
+fig, ax = plt.subplots(figsize=(10,10))
 
 # DATA FIRST
 # BERMUDA
@@ -186,12 +186,17 @@ ax.errorbar(GLW20210919['H2O'], GLW20210919['dD_mean']-target_dD_GLW,
 ax.errorbar(GLW20210920['H2O'], GLW20210920['dD_mean']-target_dD_GLW, 
            GLW20210920['dD_err'], fmt = '^', ms = 8, c='r')
 
+legend1 = "True $\delta$D = %.2f‰" % standard('BER', 'dD')
+legend2 = "True $\delta$D = %.2f‰" % standard('FINSE', 'dD')
+legend3 = "True $\delta$D = %.2f‰" % standard('GLW', 'dD')
+
 # Graphics
-ax.set_xlabel('H$_2$O [ppm]', fontsize=24)
-ax.set_ylabel('$\delta$D obs-std [‰]', fontsize=24)
-plt.xticks(np.arange(0, 21000, step = 2500))
+ax.set_xlabel('H$_2$O (ppm)', fontsize=24)
+ax.set_ylabel('$\delta$D obs-std (‰)', fontsize=24)
+plt.xticks(np.arange(0, 21000, step = 3000))
 ax.tick_params(axis='both', which='major', labelsize=20)
-ax.legend(['Bermuda','Finse','GLW'], fontsize=16)
+#ax.legend(['Bermuda','Finse','GLW'], fontsize=16)
+ax.legend([legend1,legend2,legend3], fontsize=16)
 ax.grid()
 
 # BERMUDA FIT

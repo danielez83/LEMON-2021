@@ -29,8 +29,8 @@ Calibration_param_filename  = '../Standard_reg_param_STD_corr.pkl'
 calibrate_isotopes          = 'yes'
 calibrate_humidity          = 'yes'
 
-start_date_str              = '2021-09-18 12:00:00'
-stop_date_str               = '2021-09-18 15:00:00'
+start_date_str              = '2021-09-18 13:45:00'
+stop_date_str               = '2021-09-18 14:15:00'
 
 #%% Highlight section --------------------------------------------------------
 SOI = 0
@@ -146,15 +146,15 @@ ax[0].set_ylabel('H$_2$O (ppm)')
 #ax[0].set_ylim([10000, 20000])
 
 #df_Picarro['d18O'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[1], label = 'd18O raw')
-df_Picarro_data_calibrated['d18O'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[1], label = 'd18O calibrated')
+df_Picarro_data_calibrated['d18O'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[1], label = 'd18O calibrated', color = 'k')
 ax[1].legend()
 ax[1].set_ylabel('$\delta^{18}$O (‰)')
 ax[1].grid(which = 'both')
 
 #df_Picarro['dD'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[2], label = 'dD raw')
-df_Picarro_data_calibrated['dD'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[2], label = 'dD calibrated')
+df_Picarro_data_calibrated['dD'][(df_Picarro.index > start_date) & (df_Picarro.index < stop_date)].plot(ax = ax[2], label = 'dD calibrated', color = 'r')
 ax[2].legend()
-ax[2].set_ylabel('$\delta$D [‰]')
+ax[2].set_ylabel('$\delta$D (‰)')
 ax[2].grid(which = 'both')
 
 df_Picarro_data_calibrated['dexcess'] = df_Picarro_data_calibrated['dD'] - 8*df_Picarro_data_calibrated['d18O']

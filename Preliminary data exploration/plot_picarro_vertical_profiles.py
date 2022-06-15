@@ -22,9 +22,9 @@ from scipy import signal
 
 #%% Configuration
 #iMet_filename               = '../iMet/44508/iMet-XQ2-44508_20210918.nc'
-Picarro_filename            = '../../Picarro_HIDS2254/2021/09/HIDS2254-20210923-DataLog_User.nc'
+Picarro_filename            = '../../Picarro_HIDS2254/2021/09/HIDS2254-20210918-DataLog_User.nc'
 Flight_table_filename       = '../../Excel/Flights_Table.csv'
-Flight_OI                   =  16#[2,3]#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
+Flight_OI                   =  7#[2,3]#[4,5,6,7]#[8]#[9,10,11]#[12]#[14,15]#[16]
 Calibration_param_filename  = '../Standard_reg_param_STD_corr.pkl'
 display                     = 'raw' #'raw', 'binned'
 bin_mode                    = 'auto' #'auto', 'manual'
