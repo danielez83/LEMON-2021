@@ -21,26 +21,26 @@ from filter_picarro_data import delay_picarro_data
 
 #%% Configuration
 # Input files ----------------------------------------------------------------
-iMet_filename                   = '../iMet/44508/iMet-XQ2-44508_20210918.nc'
+iMet_filename                   = '../iMet/44508/iMet-XQ2-44508_20210921.nc'
 #Picarro_filename                = '../Picarro_HIDS2254/2021/09/HIDS2254-20210923-DataLog_User.nc' # Raw Data
-Picarro_filename                = '../Picarro_HIDS2254/LEMON2021-HIDS2254_20210917_20211102/calibrated/2021/09/FARLAB_HIDS2254_cal_V1_20210918.nc'  # FaVaCal
+Picarro_filename                = '../Picarro_HIDS2254/LEMON2021-HIDS2254_20210917_20211102/calibrated/2021/09/FARLAB_HIDS2254_cal_V1_20210921.nc'  # FaVaCal
 Calibration_param_filename      = 'Standard_reg_param_STD_corr.pkl'
 
 # Output files ----------------------------------------------------------------
-pkl_output_filename             = '../PKL final data/flight_04_nofilt_V1.pkl'
+pkl_output_filename             = '../PKL final data/flight_12_V1.pkl'
 save_pkl                        = True
-csv_output_filename             = '../CSV final data/flight_04_nofilt_V1.csv'
+csv_output_filename             = '../CSV final data/flight_12_V1.csv'
 save_csv                        = True
 
 # Date - time of interest
-start_date_str                  = '2021-09-18 05:12:00'
-stop_date_str                   = '2021-09-18 06:06:00'
+start_date_str                  = '2021-09-21 06:57:00'
+stop_date_str                   = '2021-09-21 08:37:00'
 
 # Other Settings
 FaVaCal                         = True # Import FaVaCal calibrated data
 calibrate_isotopes              = False
 calibrate_humidity              = False
-filter_data                     = False
+filter_data                     = True
 
 check_humidity                  = False
 display_plots                   = True
@@ -50,7 +50,7 @@ variables_to_include_iMet       = ['LAT', 'LON', 'ALT',
 variables_to_include_Picarro    = ['H2O', 'd18O', 'dD'] # Picarro time will be included as the index
 
 #%% Metadata
-metadata = {"Flight ID"     : 16}#,
+metadata = {"Flight ID"     : 12}#,
             #"Other info"    : "Test"}
 
 #%% Import PICARRO data

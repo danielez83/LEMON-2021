@@ -16,29 +16,40 @@ import pickle
 from scipy import signal
 
 #%% Configuration
+# V1 data is FaVaCal processed and calibrated data
 data_filename            = [#'../PKL final data/flight_04.pkl',
                             #'../PKL final data/flight_04_V1.pkl',
-                            '../PKL final data/flight_04_nofilt_V1.pkl',
+                            #'../PKL final data/flight_04_nofilt_V1.pkl',
                             #'../PKL final data/flight_05.pkl',
+                            #'../PKL final data/flight_05_V1.pkl',
+                            #'../PKL final data/flight_05_nofilt_V1.pkl',
                             #'../PKL final data/flight_06.pkl',
+                            #'../PKL final data/flight_06_V1.pkl',
+                            #'../PKL final data/flight_06_nofilt_V1.pkl',
                             #'../PKL final data/flight_07.pkl',
+                            #'../PKL final data/flight_07_nofilt_V1.pkl',
+                            #'../PKL final data/flight_07_V1.pkl',
                             #'../PKL final data/flight_08.pkl',
+                            #'../PKL final data/flight_08_nofilt_V1.pkl',
+                            #'../PKL final data/flight_08_V1.pkl',
                             #'../PKL final data/flight_09.pkl',
                             #'../PKL final data/flight_10.pkl',
                             #'../PKL final data/flight_11.pkl',
-                            #'../PKL final data/flight_12.pkl',
+                            '../PKL final data/flight_12.pkl',
+                            #'../PKL final data/flight_12_nofilt_V1.pkl',
+                            '../PKL final data/flight_12_V1.pkl',
                             #'../PKL final data/flight_14.pkl',
                             #'../PKL final data/flight_15.pkl',
                             #'../PKL final data/flight_16.pkl',
                             ]
 
 
-display                     = 'raw' #'raw', 'binned'
+display                     = 'binned' #'raw', 'binned'
 bin_mode                    = 'manual' #'auto', 'manual'
 bins                        = np.arange(400, 3500, 100)
 label_profile               = False
 
-show_PBLH                   = True
+show_PBLH                   = False
 PBLH_values                 = [1503.4145564912014, 1949.820674343401] # Average
 PBLH_values                 = [981.7148488141952, 1002.3649894834459] # For flight 07, BLH at 15 and at 16
 PBLH_values                 = [1553.746437814716, 1562.5964981015377] # For flight 10, BLH at 10 and 11
@@ -200,10 +211,12 @@ elif display == 'binned':
     #fig.subplots_adjust(top=0.95)
     #ax[1].set_xticks(np.arange(-35, -10, 5)) # OK flight 7
     #ax[3].set_xticks(np.arange(-10, 55, 10)) # OK flight 7
-    ax[1].set_xticks(np.arange(-17, -15.5, .5)) # OK flight 10
-    ax[2].set_xticks(np.arange(-122, -112, 3)) # OK flight 10
-    ax[3].set_xticks(np.arange(5, 26, 5)) # OK flight 10
-    ax[3].set_xlim([0,25]) # OK flight 10
+    #ax[1].set_xticks(np.arange(-17, -15.5, .5)) # OK flight 10
+    #ax[2].set_xticks(np.arange(-122, -112, 3)) # OK flight 10
+    #ax[3].set_xticks(np.arange(5, 26, 5)) # OK flight 10
+    #ax[3].set_xlim([0,25]) # OK flight 10
+    ax[3].set_xlim([0,35])
+    ax[3].set_xticks(np.arange(5, 40, 5))
     
     # Common graphical settings
     for axis in ax:
