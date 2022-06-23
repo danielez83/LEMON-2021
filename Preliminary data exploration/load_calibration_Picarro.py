@@ -19,7 +19,7 @@ from hum_corr_fun import hum_corr_fun_v2 as hum_corr_fun
 from FARLAB_standards import standard
 
 #%% Configuration
-filename            = "../Picarro_HIDS2254/Standard_Table.txt"
+filename            = "../../Picarro_HIDS2254/Standard_Table.txt"
 filename_to_save    = "Standard_reg_param_STD_corr.pkl"
 correction_type     = 'standard_based' #standard_based, mean
 
